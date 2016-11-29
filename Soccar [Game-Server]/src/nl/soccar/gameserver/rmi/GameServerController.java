@@ -34,7 +34,7 @@ public class GameServerController {
         }
 
         try {
-            Registry r = LocateRegistry.getRegistry(props.getProperty("mainserver", "localhost"), RmiConstants.PORT_NUMBER_GAME_SERVER);
+            Registry r = LocateRegistry.getRegistry(props.getProperty("mainserver"), RmiConstants.PORT_NUMBER_GAME_SERVER);
             mainServerForGameServer = (IMainServerForGameServer) r.lookup(RmiConstants.BINDING_NAME_MAIN_SERVER_FOR_GAME_SERVER);
         } catch (RemoteException | NotBoundException e) {
             LOGGER.log(Level.WARNING, "An error occurred while connecting to the Main server through RMI.", e);
