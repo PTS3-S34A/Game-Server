@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.soccar.gameserver.SessionController;
 import nl.soccar.library.enumeration.BallType;
 import nl.soccar.library.enumeration.Duration;
 import nl.soccar.library.enumeration.MapType;
@@ -26,7 +27,7 @@ public class GameServerForMainServer extends UnicastRemoteObject implements IGam
 
     @Override
     public boolean createSession(String name, String password, int capacity, Duration duration, MapType mapType, BallType ballType) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return SessionController.getInstance().createSession(name, password, capacity, duration, mapType, ballType);
     }
 
     /**
