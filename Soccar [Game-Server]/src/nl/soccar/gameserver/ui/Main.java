@@ -78,7 +78,7 @@ public class Main implements Runnable{
      */
     private static void printWelcomeMessage() {
         printDevider();
-        System.out.println("MAIN SERVER STARTED");
+        System.out.println("GAME SERVER STARTED");
         printIpAddress();
         System.out.println("TYPE 'EXIT' TO STOP THE SERVER");
         printDevider();
