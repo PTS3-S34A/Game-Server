@@ -23,6 +23,7 @@ public class GameServerController {
     private static final String LOCATION_PROPERTIES = "mainserver.properties";
 
     private IMainServerForGameServer mainServerForGameServer;
+    private GameServerForMainServer gameServerForMainServer;
 
     public GameServerController() {
         Properties props = new Properties();
@@ -36,8 +37,27 @@ public class GameServerController {
         try {
             Registry r = LocateRegistry.getRegistry(props.getProperty("mainserver"), RmiConstants.PORT_NUMBER_GAME_SERVER);
             mainServerForGameServer = (IMainServerForGameServer) r.lookup(RmiConstants.BINDING_NAME_MAIN_SERVER_FOR_GAME_SERVER);
+
+            gameServerForMainServer = new GameServerForMainServer(this);
+            mainServerForGameServer.register(gameServerForMainServer);
+
         } catch (RemoteException | NotBoundException e) {
             LOGGER.log(Level.WARNING, "An error occurred while connecting to the Main server through RMI.", e);
+        }
+    }
+
+    /**
+     * Unexports the RMI-stubs and closes the database connection.
+     */
+    public void close() {
+        gameServerForMainServer.close();
+    }
+
+    public void deregister() {
+        try {
+            mainServerForGameServer.deregister(gameServerForMainServer);
+        } catch (RemoteException e) {
+            LOGGER.log(Level.WARNING, "An error occurred while deregistering this game server on the main server.", e);
         }
     }
 

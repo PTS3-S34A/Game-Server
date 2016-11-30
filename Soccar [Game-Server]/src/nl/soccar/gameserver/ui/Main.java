@@ -53,6 +53,8 @@ public class Main implements Runnable{
                     break;
                 }
             }
+            
+            controller.close();
         }
     }
 
@@ -64,8 +66,9 @@ public class Main implements Runnable{
      */
     private boolean processInput(String input) {
         if (input.equalsIgnoreCase(COMMAND_EXIT)) {
+            controller.deregister();
             return true;
-        }
+        } 
         return false;
     }
 
