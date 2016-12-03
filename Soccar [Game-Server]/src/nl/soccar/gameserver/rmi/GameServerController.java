@@ -41,8 +41,12 @@ public class GameServerController {
             Registry r = LocateRegistry.getRegistry(props.getProperty("mainserver"), RmiConstants.PORT_NUMBER_GAME_SERVER);
             mainServerForGameServer = (IMainServerForGameServer) r.lookup(RmiConstants.BINDING_NAME_MAIN_SERVER_FOR_GAME_SERVER);
             
+            LOGGER.info("Connection with the Main server is established.");
+            
             gameServerForMainServer = new GameServerForMainServer(this);
             mainServerForGameServer.register(gameServerForMainServer);
+
+            LOGGER.info("Registered this Game server on the Main server.");
             
         } catch (RemoteException | NotBoundException e) {
             LOGGER.log(Level.WARNING, "An error occurred while connecting to the Main server through RMI.", e);
@@ -67,7 +71,7 @@ public class GameServerController {
     public void sessionCreated(String roomName, String hostName, boolean hasPassword, int capacity) {
         SessionData session = new SessionData("IPADDRESS", roomName, hostName, hasPassword);
         session.setCapacity(capacity);
-        // TODO set occupation
+        session.setOccupation(1);
         
         try {
             mainServerForGameServer.sessionCreated(gameServerForMainServer, session);
