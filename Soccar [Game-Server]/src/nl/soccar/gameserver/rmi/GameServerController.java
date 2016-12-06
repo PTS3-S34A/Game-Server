@@ -2,6 +2,8 @@ package nl.soccar.gameserver.rmi;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -69,7 +71,13 @@ public class GameServerController {
     }
     
     public void sessionCreated(String roomName, String hostName, boolean hasPassword, int capacity) {
-        SessionData session = new SessionData("IPADDRESS", roomName, hostName, hasPassword);
+        String ipAddress = "0.0.0.0";
+        try {
+            ipAddress = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            LOGGER.log(Level.SEVERE, "An error occurred while getting the Local IP Address.", e);
+        }
+        SessionData session = new SessionData(ipAddress, roomName, hostName, hasPassword);
         session.setCapacity(capacity);
         session.setOccupation(1);
         
