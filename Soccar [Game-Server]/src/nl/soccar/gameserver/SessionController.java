@@ -6,12 +6,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import nl.soccar.gameserver.message.JoinSessionMessage;
+import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
+import nl.soccar.gameserver.message.PlayerLeftSessionMessage;
 import nl.soccar.gameserver.rmi.GameServerController;
-import nl.soccar.library.GameSettings;
-import nl.soccar.library.Session;
+import nl.soccar.library.*;
 import nl.soccar.library.enumeration.BallType;
 import nl.soccar.library.enumeration.Duration;
 import nl.soccar.library.enumeration.MapType;
+import nl.soccar.library.enumeration.TeamColour;
+import nl.soccar.socnet.Node;
+import nl.soccar.socnet.connection.Connection;
 
 /**
  *
@@ -24,19 +30,21 @@ public class SessionController {
     private static SessionController instance;
 
     private final GameServerController controller;
-    private final List<Session> sessions;
+    private final Node server;
 
-    private SessionController(GameServerController controller) {
+    private final List<Session> sessions = new ArrayList<>();
+
+    private SessionController(GameServerController controller, Node server) {
         this.controller = controller;
-        sessions = new ArrayList<>();
+        this.server = server;
     }
 
     public static SessionController getInstance() {
         return instance;
     }
 
-    public static void setInstance(GameServerController controller) {
-        instance = new SessionController(controller);
+    public static void setInstance(GameServerController controller, Node server) {
+        instance = new SessionController(controller, server);
     }
 
     public boolean createSession(String name, String password, int capacity, Duration duration, MapType mapType, BallType ballType) {
@@ -54,7 +62,6 @@ public class SessionController {
         }
 
         LOGGER.log(Level.INFO, "Session {0} created.", name);
-
         return true;
     }
 
@@ -67,6 +74,76 @@ public class SessionController {
         }
 
         LOGGER.log(Level.INFO, "Session {0} destroyed.", name);
+    }
+
+    public JoinSessionMessage.Status joinSession(Player player, String roomName, String password) {
+        synchronized (sessions) {
+            Optional<Session> optional = sessions.stream().filter(s -> s.getRoom().getName().equals(roomName)).findFirst();
+            if (!optional.isPresent()) {
+                return JoinSessionMessage.Status.SESSION_NON_EXISTENT;
+            }
+
+            Session session = optional.get();
+            Room room = session.getRoom();
+
+            int occupation = room.getOccupancy();
+            if (occupation >= room.getCapacity()) {
+                return JoinSessionMessage.Status.CAPACITY_OVERFLOW;
+            }
+
+            if (!room.check(password)) {
+                return JoinSessionMessage.Status.INVALID_PASSWORD;
+            }
+
+            if (room.getAllPlayers().stream().map(Player::getUsername).anyMatch(n -> player.getUsername().equals(n))) {
+                return JoinSessionMessage.Status.USERNAME_EXISTS;
+            }
+
+            Team teamBlue = room.getTeamBlue();
+            Team teamRed = room.getTeamRed();
+
+            Team team = occupation % 2 == 0 ? teamBlue : teamRed;
+            team.join(player);
+
+            player.setCurrentSession(session);
+
+            sendJoinSessionResponse(player, room, session.getGame());
+            sendJoinedSessionNotification(player, team.getTeamColour(), room);
+
+            return JoinSessionMessage.Status.SUCCESS;
+        }
+    }
+
+    private void sendJoinSessionResponse(Player joinedPlayer, Room room, Game game) {
+        // Send session data to connecting player
+        Connection connection = server.getConnectionFromPlayer(joinedPlayer);
+        connection.send(new JoinSessionMessage(JoinSessionMessage.Status.SUCCESS, room.getName(), room.getCapacity(), game.getGameSettings()));
+
+        // Send the connecting player all stuff
+        room.getTeamBlue().getPlayers().stream().filter(p -> p != joinedPlayer).map(p -> new PlayerJoinedSessionMessage(p, TeamColour.BLUE)).forEach(connection::send);
+        room.getTeamRed().getPlayers().stream().filter(p -> p != joinedPlayer).map(p -> new PlayerJoinedSessionMessage(p, TeamColour.RED)).forEach(connection::send);
+    }
+
+    private void sendJoinedSessionNotification(Player joinedPlayer, TeamColour joinedTeam, Room room) {
+        // Send notification to all players that the connecting player joined
+        PlayerJoinedSessionMessage m = new PlayerJoinedSessionMessage(joinedPlayer, joinedTeam);
+        room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
+    }
+
+    public boolean leaveSession(Player player, Session session) {
+        Room room = session.getRoom();
+
+        Team teamBlue = room.getTeamBlue();
+        Team teamRed = room.getTeamRed();
+
+        Team team = teamBlue.getPlayers().stream().filter(p -> p.getUsername().equals(player.getUsername())).count() > 0 ? teamBlue : teamRed;
+        team.leave(player);
+
+        player.setCurrentSession(null);
+
+        PlayerLeftSessionMessage m = new PlayerLeftSessionMessage(player.getUsername(), team.getTeamColour());
+        room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
+        return true;
     }
 
     public List<Session> getAllSessions() {

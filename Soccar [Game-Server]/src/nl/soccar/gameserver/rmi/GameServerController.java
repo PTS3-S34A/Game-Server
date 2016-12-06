@@ -11,10 +11,19 @@ import java.rmi.registry.Registry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import nl.soccar.gameserver.GameServerConnectionListener;
 import nl.soccar.gameserver.SessionController;
+import nl.soccar.gameserver.message.JoinSessionMessage;
+import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
+import nl.soccar.gameserver.message.PlayerLeftSessionMessage;
+import nl.soccar.gameserver.message.RegisterPlayerMessage;
 import nl.soccar.library.SessionData;
 import nl.soccar.rmi.RmiConstants;
 import nl.soccar.rmi.interfaces.IMainServerForGameServer;
+import nl.soccar.socnet.Server;
+import nl.soccar.socnet.message.Message;
+import nl.soccar.socnet.message.MessageRegistry;
 
 /**
  *
@@ -29,8 +38,9 @@ public class GameServerController {
     private IMainServerForGameServer mainServerForGameServer;
     private GameServerForMainServer gameServerForMainServer;
 
+    private Server server;
+
     public GameServerController() {
-        SessionController.setInstance(this);
         Properties props = new Properties();
 
         try (FileInputStream input = new FileInputStream(LOCATION_PROPERTIES)) {
@@ -50,7 +60,19 @@ public class GameServerController {
 
             LOGGER.info("Registered this Game server on the Main server.");
 
-        } catch (RemoteException | NotBoundException e) {
+            Server server = new Server();
+            server.addListener(new GameServerConnectionListener());
+
+            MessageRegistry registry = server.getMessageRegistry();
+            registry.register(RegisterPlayerMessage.class);
+            registry.register(JoinSessionMessage.class);
+            registry.register(PlayerJoinedSessionMessage.class);
+            registry.register(PlayerLeftSessionMessage.class);
+
+            SessionController.setInstance(this, server);
+
+            server.bind(1046);
+        } catch (IOException | NotBoundException e) {
             LOGGER.log(Level.WARNING, "An error occurred while connecting to the Main server through RMI.", e);
         }
     }
