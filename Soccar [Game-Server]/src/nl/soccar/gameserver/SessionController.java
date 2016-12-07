@@ -138,8 +138,6 @@ public class SessionController {
 
         player.setCurrentSession(null);
 
-        room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> System.out.println(c));
-        
         PlayerLeftSessionMessage m = new PlayerLeftSessionMessage(player.getUsername(), colour);
         room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
         LOGGER.log(Level.INFO, "Player {0} left the Session.", player.getUsername());

@@ -1,8 +1,6 @@
 package nl.soccar.gameserver.message.handler;
 
 import io.netty.buffer.ByteBuf;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nl.soccar.gamecommuncation.util.ByteBufUtilities;
 import nl.soccar.gameserver.SessionController;
 import nl.soccar.gameserver.message.PlayerLeaveSessionMessage;
