@@ -4,13 +4,14 @@ import nl.soccar.gameserver.message.handler.PlayerJoinedSessionMessageHandler;
 import nl.soccar.library.Player;
 import nl.soccar.library.enumeration.TeamColour;
 import nl.soccar.socnet.message.Message;
+import nl.soccar.socnet.message.MessageConstants;
 import nl.soccar.socnet.message.MessageEvent;
 
 /**
  *
  * @author PTS34A
  */
-@MessageEvent(id = 3, handler = PlayerJoinedSessionMessageHandler.class)
+@MessageEvent(id = MessageConstants.PLAYER_JOINED_SESSION_MESSAGE_ID, handler = PlayerJoinedSessionMessageHandler.class)
 public final class PlayerJoinedSessionMessage extends Message {
 
     private final Player player;
@@ -31,7 +32,7 @@ public final class PlayerJoinedSessionMessage extends Message {
 
     @Override
     public int getId() {
-        return 3;
+        return MessageConstants.PLAYER_JOINED_SESSION_MESSAGE_ID;
     }
 
 }

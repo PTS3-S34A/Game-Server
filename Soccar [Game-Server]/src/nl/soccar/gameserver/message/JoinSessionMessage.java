@@ -2,14 +2,14 @@ package nl.soccar.gameserver.message;
 
 import nl.soccar.gameserver.message.handler.JoinSessionMessageHandler;
 import nl.soccar.library.GameSettings;
-import nl.soccar.library.enumeration.Duration;
 import nl.soccar.socnet.message.Message;
+import nl.soccar.socnet.message.MessageConstants;
 import nl.soccar.socnet.message.MessageEvent;
 
-/**
+/** * 
  * @author PTS34A
  */
-@MessageEvent(id = 2, handler = JoinSessionMessageHandler.class)
+@MessageEvent(id = MessageConstants.JOIN_SESSION_MESSAGE_ID, handler = JoinSessionMessageHandler.class)
 public final class JoinSessionMessage extends Message {
 
     public enum Status {
@@ -74,7 +74,7 @@ public final class JoinSessionMessage extends Message {
 
     @Override
     public int getId() {
-        return 2;
+        return MessageConstants.JOIN_SESSION_MESSAGE_ID;
     }
 
 }
