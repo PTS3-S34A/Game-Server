@@ -30,7 +30,7 @@ public final class PlayerLeftSessionMessage extends Message {
 
     @Override
     public int getId() {
-        return 3;
+        return 4;
     }
 
 }
