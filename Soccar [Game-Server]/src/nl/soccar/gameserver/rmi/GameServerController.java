@@ -16,13 +16,13 @@ import nl.soccar.gameserver.GameServerConnectionListener;
 import nl.soccar.gameserver.SessionController;
 import nl.soccar.gameserver.message.JoinSessionMessage;
 import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
+import nl.soccar.gameserver.message.PlayerLeaveSessionMessage;
 import nl.soccar.gameserver.message.PlayerLeftSessionMessage;
 import nl.soccar.gameserver.message.RegisterPlayerMessage;
 import nl.soccar.library.SessionData;
 import nl.soccar.rmi.RmiConstants;
 import nl.soccar.rmi.interfaces.IMainServerForGameServer;
 import nl.soccar.socnet.Server;
-import nl.soccar.socnet.message.Message;
 import nl.soccar.socnet.message.MessageRegistry;
 
 /**
@@ -60,7 +60,7 @@ public class GameServerController {
 
             LOGGER.info("Registered this Game server on the Main server.");
 
-            Server server = new Server();
+            server = new Server();
             server.addListener(new GameServerConnectionListener());
 
             MessageRegistry registry = server.getMessageRegistry();
@@ -68,6 +68,7 @@ public class GameServerController {
             registry.register(JoinSessionMessage.class);
             registry.register(PlayerJoinedSessionMessage.class);
             registry.register(PlayerLeftSessionMessage.class);
+            registry.register(PlayerLeaveSessionMessage.class);
 
             SessionController.setInstance(this, server);
 
