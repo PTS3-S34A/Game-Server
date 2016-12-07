@@ -4,10 +4,8 @@ import io.netty.buffer.ByteBuf;
 import nl.soccar.gamecommuncation.util.ByteBufUtilities;
 import nl.soccar.gameserver.SessionController;
 import nl.soccar.gameserver.message.JoinSessionMessage;
-import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
 import nl.soccar.library.GameSettings;
 import nl.soccar.library.Player;
-import nl.soccar.library.Session;
 import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
 
