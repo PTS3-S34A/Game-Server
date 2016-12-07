@@ -47,9 +47,9 @@ public class SessionController {
         instance = new SessionController(controller, server);
     }
 
-    public boolean createSession(String name, String password, int capacity, Duration duration, MapType mapType, BallType ballType) {
+    public boolean createSession(String name, String password, String hostName, int capacity, Duration duration, MapType mapType, BallType ballType) {
         Session session = new Session(name, password);
-        session.getRoom().setCapacity(capacity);
+        session.getRoom().setCapacity(capacity);        
 
         GameSettings gameSettings = session.getGame().getGameSettings();
         gameSettings.setDuration(duration);
@@ -58,7 +58,7 @@ public class SessionController {
 
         synchronized (sessions) {
             sessions.add(session);
-            controller.sessionCreated(name, "host", !password.isEmpty(), capacity);
+            controller.sessionCreated(name, hostName, !password.isEmpty(), capacity);
         }
 
         LOGGER.log(Level.INFO, "Session {0} created.", name);

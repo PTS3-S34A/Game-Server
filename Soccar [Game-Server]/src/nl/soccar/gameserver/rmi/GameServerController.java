@@ -22,7 +22,6 @@ import nl.soccar.library.SessionData;
 import nl.soccar.rmi.RmiConstants;
 import nl.soccar.rmi.interfaces.IMainServerForGameServer;
 import nl.soccar.socnet.Server;
-import nl.soccar.socnet.message.Message;
 import nl.soccar.socnet.message.MessageRegistry;
 
 /**
