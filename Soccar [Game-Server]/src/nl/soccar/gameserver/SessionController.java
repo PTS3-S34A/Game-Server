@@ -130,20 +130,29 @@ public class SessionController {
         room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
     }
 
-    public boolean leaveSession(Player player, Session session) {
+    public boolean leaveSession(Player player, TeamColour colour, Session session) {
         Room room = session.getRoom();
-
-        Team teamBlue = room.getTeamBlue();
-        Team teamRed = room.getTeamRed();
-
-        Team team = teamBlue.getPlayers().stream().filter(p -> p.getUsername().equals(player.getUsername())).count() > 0 ? teamBlue : teamRed;
+        
+        Team team = colour == TeamColour.BLUE ? room.getTeamBlue() : room.getTeamRed();
         team.leave(player);
 
         player.setCurrentSession(null);
 
-        PlayerLeftSessionMessage m = new PlayerLeftSessionMessage(player.getUsername(), team.getTeamColour());
+        room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> System.out.println(c));
+        
+        PlayerLeftSessionMessage m = new PlayerLeftSessionMessage(player.getUsername(), colour);
         room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
+        LOGGER.log(Level.INFO, "Player {0} left the Session.", player.getUsername());
         return true;
+    }
+    
+    public void leaveSession(Player player, Session session) {
+        Room room = player.getCurrentSession().getRoom();
+        
+        Team teamBlue = room.getTeamBlue();
+        
+        TeamColour colour = teamBlue.getPlayers().stream().filter(p -> p.getUsername().equals(player.getUsername())).count() > 0 ? TeamColour.BLUE : TeamColour.RED;
+        leaveSession(player, colour, session);
     }
 
     public List<Session> getAllSessions() {
