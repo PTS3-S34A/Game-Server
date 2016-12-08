@@ -18,7 +18,9 @@ import nl.soccar.gameserver.message.JoinSessionMessage;
 import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
 import nl.soccar.gameserver.message.PlayerLeaveSessionMessage;
 import nl.soccar.gameserver.message.PlayerLeftSessionMessage;
+import nl.soccar.gameserver.message.PlayerStartedGameMessage;
 import nl.soccar.gameserver.message.RegisterPlayerMessage;
+import nl.soccar.gameserver.message.StartGameMessage;
 import nl.soccar.library.SessionData;
 import nl.soccar.rmi.RmiConstants;
 import nl.soccar.rmi.interfaces.IMainServerForGameServer;
@@ -69,6 +71,8 @@ public class GameServerController {
             registry.register(PlayerJoinedSessionMessage.class);
             registry.register(PlayerLeftSessionMessage.class);
             registry.register(PlayerLeaveSessionMessage.class);
+            registry.register(PlayerStartedGameMessage.class);
+            registry.register(StartGameMessage.class);
 
             SessionController.setInstance(this, server);
 
