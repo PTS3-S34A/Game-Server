@@ -154,7 +154,7 @@ public class SessionController {
         leaveSession(player, colour, session);
     }
     
-    public void startGame(Player player, Session session) {
+    public void startGame(Session session) {
         Room room = session.getRoom();
         
         PlayerStartedGameMessage m = new PlayerStartedGameMessage();

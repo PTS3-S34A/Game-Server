@@ -27,7 +27,7 @@ public final class StartGameMessageHandler extends MessageHandler<StartGameMessa
            connection.close();
            return;
        }
-        SessionController.getInstance().startGame(player, session);
+        SessionController.getInstance().startGame(session);
     }
 
     @Override
