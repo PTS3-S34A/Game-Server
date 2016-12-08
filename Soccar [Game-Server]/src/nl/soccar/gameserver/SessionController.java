@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import nl.soccar.gameserver.message.JoinSessionMessage;
 import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
 import nl.soccar.gameserver.message.PlayerLeftSessionMessage;
+import nl.soccar.gameserver.message.PlayerStartedGameMessage;
 import nl.soccar.gameserver.rmi.GameServerController;
 import nl.soccar.library.*;
 import nl.soccar.library.enumeration.BallType;
@@ -46,7 +47,7 @@ public class SessionController {
     public static void setInstance(GameServerController controller, Node server) {
         instance = new SessionController(controller, server);
     }
-
+    
     public boolean createSession(String name, String password, String hostName, int capacity, Duration duration, MapType mapType, BallType ballType) {
         Session session = new Session(name, password);
         session.getRoom().setCapacity(capacity);        
@@ -151,6 +152,18 @@ public class SessionController {
         
         TeamColour colour = teamBlue.getPlayers().stream().filter(p -> p.getUsername().equals(player.getUsername())).count() > 0 ? TeamColour.BLUE : TeamColour.RED;
         leaveSession(player, colour, session);
+    }
+    
+    public void startGame(Player player, Session session) {
+        Room room = session.getRoom();
+        
+        PlayerStartedGameMessage m = new PlayerStartedGameMessage();
+        room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
+        
+        Game game = session.getGame();
+        game.start();
+        
+        LOGGER.log(Level.INFO,"Game from {0} started.", room.getName());
     }
 
     public List<Session> getAllSessions() {
