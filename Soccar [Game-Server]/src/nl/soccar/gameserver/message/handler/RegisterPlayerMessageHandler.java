@@ -37,7 +37,16 @@ public final class RegisterPlayerMessageHandler extends MessageHandler<RegisterP
     @Override
     protected RegisterPlayerMessage decode(Connection connection, ByteBuf buf) throws Exception {
         String username = ByteBufUtilities.readString(buf);
-        CarType type = CarType.valueOf(ByteBufUtilities.readString(buf));
+        if (username == null) {
+            return null;
+        }
+
+        if (buf.readableBytes() < 1) {
+            buf.resetReaderIndex();
+            return null;
+        }
+
+        CarType type = CarType.parse(buf.readByte());
 
         return new RegisterPlayerMessage(username, type);
     }

@@ -36,31 +36,38 @@ public final class JoinSessionMessageHandler extends MessageHandler<JoinSessionM
             return;
         }
 
-        LOGGER.log(Level.INFO, "Player {0} joined session {1}.", new String[] { player.getUsername(), roomName });
+        LOGGER.log(Level.INFO, "Player {0} joined session {1}.", new String[]{player.getUsername(), roomName});
     }
 
     @Override
     protected void encode(Connection connection, JoinSessionMessage message, ByteBuf buf) throws Exception {
-        GameSettings settings = message.getGameSettings();
-
         JoinSessionMessage.Status status = message.getStatus();
         if (status != JoinSessionMessage.Status.SUCCESS) {
             ByteBufUtilities.writeString(status.name(), buf);
             return;
         }
+        
+        GameSettings settings = message.getGameSettings();
 
         ByteBufUtilities.writeString(status.name(), buf);
         ByteBufUtilities.writeString(message.getRoomName(), buf);
         buf.writeByte(message.getCapacity());
-        ByteBufUtilities.writeString(settings.getMapType().name(), buf);
-        ByteBufUtilities.writeString(settings.getBallType().name(), buf);
-        ByteBufUtilities.writeString(settings.getDuration().name(), buf);
+        buf.writeByte(settings.getMapType().getId());
+        buf.writeByte(settings.getBallType().getId());
+        buf.writeByte(settings.getDuration().getId());
     }
 
     @Override
     protected JoinSessionMessage decode(Connection connection, ByteBuf buf) throws Exception {
         String roomName = ByteBufUtilities.readString(buf);
+        if (roomName == null) {
+            return null;
+        }
+
         String password = ByteBufUtilities.readString(buf);
+        if (password == null) {
+            return null;
+        }
 
         return new JoinSessionMessage(roomName, password);
     }
