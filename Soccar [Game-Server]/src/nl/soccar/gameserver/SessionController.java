@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nl.soccar.gameserver.message.JoinSessionMessage;
+import nl.soccar.gameserver.message.MovePlayerMessage;
 import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
 import nl.soccar.gameserver.message.PlayerLeftSessionMessage;
 import nl.soccar.gameserver.message.PlayerStartedGameMessage;
@@ -15,8 +16,11 @@ import nl.soccar.gameserver.rmi.GameServerController;
 import nl.soccar.library.*;
 import nl.soccar.library.enumeration.BallType;
 import nl.soccar.library.enumeration.Duration;
+import nl.soccar.library.enumeration.HandbrakeAction;
 import nl.soccar.library.enumeration.MapType;
+import nl.soccar.library.enumeration.SteerAction;
 import nl.soccar.library.enumeration.TeamColour;
+import nl.soccar.library.enumeration.ThrottleAction;
 import nl.soccar.socnet.Node;
 import nl.soccar.socnet.connection.Connection;
 
@@ -47,10 +51,10 @@ public class SessionController {
     public static void setInstance(GameServerController controller, Node server) {
         instance = new SessionController(controller, server);
     }
-    
+
     public boolean createSession(String name, String password, String hostName, int capacity, Duration duration, MapType mapType, BallType ballType) {
         Session session = new Session(name, password);
-        session.getRoom().setCapacity(capacity);        
+        session.getRoom().setCapacity(capacity);
 
         GameSettings gameSettings = session.getGame().getGameSettings();
         gameSettings.setDuration(duration);
@@ -133,7 +137,7 @@ public class SessionController {
 
     public boolean leaveSession(Player player, TeamColour colour, Session session) {
         Room room = session.getRoom();
-        
+
         Team team = colour == TeamColour.BLUE ? room.getTeamBlue() : room.getTeamRed();
         team.leave(player);
 
@@ -144,26 +148,33 @@ public class SessionController {
         LOGGER.log(Level.INFO, "Player {0} left the Session.", player.getUsername());
         return true;
     }
-    
+
     public void leaveSession(Player player, Session session) {
         Room room = player.getCurrentSession().getRoom();
-        
+
         Team teamBlue = room.getTeamBlue();
-        
+
         TeamColour colour = teamBlue.getPlayers().stream().filter(p -> p.getUsername().equals(player.getUsername())).count() > 0 ? TeamColour.BLUE : TeamColour.RED;
         leaveSession(player, colour, session);
     }
-    
+
     public void startGame(Session session) {
         Room room = session.getRoom();
-        
+
         PlayerStartedGameMessage m = new PlayerStartedGameMessage();
         room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
-        
+
         Game game = session.getGame();
         game.start();
+
+        LOGGER.log(Level.INFO, "Game from {0} started.", room.getName());
+    }
+    
+    public void movePlayer(Player player, SteerAction steerAction, HandbrakeAction handbrakeAction, ThrottleAction throttleAction) {
+        Room room = player.getCurrentSession().getRoom();
         
-        LOGGER.log(Level.INFO,"Game from {0} started.", room.getName());
+        MovePlayerMessage m = new MovePlayerMessage(player.getUsername(), steerAction, handbrakeAction, throttleAction);
+        room.getAllPlayers().stream().filter(p -> p != player).map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
     }
 
     public List<Session> getAllSessions() {

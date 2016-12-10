@@ -22,9 +22,9 @@ public final class PlayerJoinedSessionMessageHandler extends MessageHandler<Play
         Player player = message.getPlayer();
 
         ByteBufUtilities.writeString(player.getUsername(), buf);
-        ByteBufUtilities.writeString(player.getPrivilege().name(), buf);
-        ByteBufUtilities.writeString(player.getCarType().name(), buf);
-        ByteBufUtilities.writeString(message.getTeam().name(), buf);
+        buf.writeByte(player.getPrivilege().getId());
+        buf.writeByte(player.getCarType().getId());
+        buf.writeByte(message.getTeam().getId());
     }
 
     @Override

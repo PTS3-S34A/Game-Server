@@ -43,7 +43,16 @@ public class PlayerLeaveSessionMessageHandler extends MessageHandler<PlayerLeave
     @Override
     protected PlayerLeaveSessionMessage decode(Connection connection, ByteBuf buf) throws Exception {
         String username = ByteBufUtilities.readString(buf);
-        TeamColour colour = TeamColour.valueOf(ByteBufUtilities.readString(buf));
+        if (username == null) {
+            return null;
+        }
+        
+        if (buf.readableBytes() < 1) {
+            buf.resetReaderIndex();
+            return null;
+        }
+        
+        TeamColour colour = TeamColour.parse(buf.readByte());
         
         return new PlayerLeaveSessionMessage(username, colour);
     }
