@@ -106,7 +106,6 @@ public class GameServerController {
 
             SessionData session = new SessionData(ipAddress, roomName, hostName, hasPassword);
             session.setCapacity(capacity);
-            session.setOccupation(1);
 
             mainServerForGameServer.sessionCreated(gameServerForMainServer, session);
         } catch (UnknownHostException | RemoteException e) {
