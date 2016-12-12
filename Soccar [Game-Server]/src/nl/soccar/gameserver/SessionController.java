@@ -1,31 +1,21 @@
 package nl.soccar.gameserver;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import nl.soccar.gameserver.message.JoinSessionMessage;
+import nl.soccar.gameserver.message.MovePlayerMessage;
+import nl.soccar.gameserver.rmi.GameServerController;
+import nl.soccar.library.GameSettings;
+import nl.soccar.library.Player;
+import nl.soccar.library.Room;
+import nl.soccar.library.Session;
+import nl.soccar.library.enumeration.*;
+import nl.soccar.socnet.Node;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import nl.soccar.gameserver.message.JoinSessionMessage;
-import nl.soccar.gameserver.message.MovePlayerMessage;
-import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
-import nl.soccar.gameserver.message.PlayerLeftSessionMessage;
-import nl.soccar.gameserver.message.PlayerStartedGameMessage;
-import nl.soccar.gameserver.rmi.GameServerController;
-import nl.soccar.library.*;
-import nl.soccar.library.enumeration.BallType;
-import nl.soccar.library.enumeration.Duration;
-import nl.soccar.library.enumeration.HandbrakeAction;
-import nl.soccar.library.enumeration.MapType;
-import nl.soccar.library.enumeration.SteerAction;
-import nl.soccar.library.enumeration.TeamColour;
-import nl.soccar.library.enumeration.ThrottleAction;
-import nl.soccar.socnet.Node;
-import nl.soccar.socnet.connection.Connection;
-
 /**
- *
  * @author PTS34A
  */
 public class SessionController {
@@ -37,7 +27,7 @@ public class SessionController {
     private final GameServerController controller;
     private final Node server;
 
-    private final List<Session> sessions = new ArrayList<>();
+    private final Map<String, SessionWrapper> sessions = new HashMap<>();
 
     private SessionController(GameServerController controller, Node server) {
         this.controller = controller;
@@ -61,8 +51,10 @@ public class SessionController {
         gameSettings.setMapType(mapType);
         gameSettings.setBallType(ballType);
 
+        SessionWrapper wrapper = new SessionWrapper(server, this, session);
+
         synchronized (sessions) {
-            sessions.add(session);
+            sessions.put(name, wrapper);
             controller.sessionCreated(name, hostName, !password.isEmpty(), capacity);
         }
 
@@ -70,119 +62,77 @@ public class SessionController {
         return true;
     }
 
-    public void destroySession(String name) {
+    public void destroySession(Session session) {
+        if (session == null) {
+            return;
+        }
+
+        String name = session.getRoom().getName();
         synchronized (sessions) {
-            Optional<Session> optional = sessions.stream().filter(s -> s.getRoom().getName().equals(name)).findAny();
-            if (optional.isPresent()) {
-                sessions.remove(optional.get());
+            SessionWrapper wrapper = sessions.remove(name);
+            if (wrapper == null) {
+                return;
             }
+
+            // TODO remove all players, or something...
+            controller.sessionDestroyed(name);
         }
 
         LOGGER.log(Level.INFO, "Session {0} destroyed.", name);
     }
 
-    public JoinSessionMessage.Status joinSession(Player player, String roomName, String password) {
+    public JoinSessionMessage.Status joinSession(Player player, String name, String password) {
         synchronized (sessions) {
-            Optional<Session> optional = sessions.stream().filter(s -> s.getRoom().getName().equals(roomName)).findFirst();
-            if (!optional.isPresent()) {
+            SessionWrapper wrapper = sessions.get(name);
+            if (wrapper == null) {
                 return JoinSessionMessage.Status.SESSION_NON_EXISTENT;
             }
 
-            Session session = optional.get();
-            Room room = session.getRoom();
-
-            int occupation = room.getOccupancy();
-            if (occupation >= room.getCapacity()) {
-                return JoinSessionMessage.Status.CAPACITY_OVERFLOW;
-            }
-
-            if (!room.check(password)) {
-                return JoinSessionMessage.Status.INVALID_PASSWORD;
-            }
-
-            if (room.getAllPlayers().stream().anyMatch(player::equals)) {
-                return JoinSessionMessage.Status.USERNAME_EXISTS;
-            }
-
-            Team teamBlue = room.getTeamBlue();
-            Team teamRed = room.getTeamRed();
-
-            Team team = occupation % 2 == 0 ? teamBlue : teamRed;
-            team.join(player);
-
-            player.setCurrentSession(session);
-
-            sendJoinSessionResponse(player, room, session.getGame());
-            sendJoinedSessionNotification(player, team.getTeamColour(), room);
-
-            return JoinSessionMessage.Status.SUCCESS;
+            return wrapper.join(player, password);
         }
-    }
-
-    private void sendJoinSessionResponse(Player joinedPlayer, Room room, Game game) {
-        // Send session data to connecting player
-        Connection connection = server.getConnectionFromPlayer(joinedPlayer);
-        connection.send(new JoinSessionMessage(JoinSessionMessage.Status.SUCCESS, room.getName(), room.getCapacity(), game.getGameSettings()));
-
-        // Send the connecting player all stuff
-        room.getTeamBlue().getPlayers().stream().filter(p -> p != joinedPlayer).map(p -> new PlayerJoinedSessionMessage(p, TeamColour.BLUE)).forEach(connection::send);
-        room.getTeamRed().getPlayers().stream().filter(p -> p != joinedPlayer).map(p -> new PlayerJoinedSessionMessage(p, TeamColour.RED)).forEach(connection::send);
-    }
-
-    private void sendJoinedSessionNotification(Player joinedPlayer, TeamColour joinedTeam, Room room) {
-        // Send notification to all players that the connecting player joined
-        PlayerJoinedSessionMessage m = new PlayerJoinedSessionMessage(joinedPlayer, joinedTeam);
-        room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
-    }
-
-    public boolean leaveSession(Player player, TeamColour colour, Session session) {
-        Room room = session.getRoom();
-
-        Team team = colour == TeamColour.BLUE ? room.getTeamBlue() : room.getTeamRed();
-        team.leave(player);
-
-        player.setCurrentSession(null);
-
-        PlayerLeftSessionMessage m = new PlayerLeftSessionMessage(player.getUsername(), colour);
-        room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
-        LOGGER.log(Level.INFO, "Player {0} left the Session.", player.getUsername());
-        return true;
     }
 
     public void leaveSession(Player player, Session session) {
-        Room room = player.getCurrentSession().getRoom();
+        if (session == null) {
+            return;
+        }
 
-        Team teamBlue = room.getTeamBlue();
+        String name = session.getRoom().getName();
+        synchronized (sessions) {
+            SessionWrapper wrapper = sessions.get(name);
+            if (wrapper == null) {
+                return;
+            }
 
-        TeamColour colour = teamBlue.getPlayers().stream().filter(player::equals).count() > 0 ? TeamColour.BLUE : TeamColour.RED;
-        leaveSession(player, colour, session);
+            wrapper.leaveSession(player);
+        }
+
+        LOGGER.log(Level.INFO, "Player {0} left session.", new String[]{player.getUsername()});
     }
 
     public void startGame(Session session) {
-        Room room = session.getRoom();
+        if (session == null) {
+            return;
+        }
 
-        PlayerStartedGameMessage m = new PlayerStartedGameMessage();
-        room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
+        String name = session.getRoom().getName();
+        synchronized (sessions) {
+            SessionWrapper wrapper = sessions.get(name);
+            if (wrapper == null) {
+                return;
+            }
 
-        Game game = session.getGame();
-        game.start();
+            wrapper.startGame();
+        }
 
-        LOGGER.log(Level.INFO, "Game from {0} started.", room.getName());
+        LOGGER.log(Level.INFO, "Game from {0} started.", name);
     }
-    
+
     public void movePlayer(Player player, SteerAction steerAction, HandbrakeAction handbrakeAction, ThrottleAction throttleAction) {
         Room room = player.getCurrentSession().getRoom();
-        
+
         MovePlayerMessage m = new MovePlayerMessage(player.getUsername(), steerAction, handbrakeAction, throttleAction);
-        room.getAllPlayers().stream().filter(p -> p != player).map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
-    }
-
-    public List<Session> getAllSessions() {
-        LOGGER.log(Level.INFO, "All sessions retrieved");
-
-        synchronized (sessions) {
-            return Collections.unmodifiableList(sessions);
-        }
+        room.getAllPlayers().stream().filter(p -> !p.equals(player)).map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
     }
 
 }
