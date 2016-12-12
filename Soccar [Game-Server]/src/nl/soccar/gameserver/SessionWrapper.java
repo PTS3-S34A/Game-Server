@@ -82,7 +82,7 @@ public final class SessionWrapper {
         PlayerLeftSessionMessage m = new PlayerLeftSessionMessage(player.getUsername(), team.getTeamColour());
         room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
 
-        if (room.getCapacity() <= 0) {
+        if (room.getOccupancy() <= 0) {
             controller.destroySession(session);
         }
     }
