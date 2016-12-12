@@ -1,26 +1,19 @@
 package nl.soccar.gameserver;
 
-import java.util.*;
+import nl.soccar.gameserver.message.JoinSessionMessage;
+import nl.soccar.gameserver.message.MovePlayerMessage;
+import nl.soccar.gameserver.rmi.GameServerController;
+import nl.soccar.library.GameSettings;
+import nl.soccar.library.Player;
+import nl.soccar.library.Room;
+import nl.soccar.library.Session;
+import nl.soccar.library.enumeration.*;
+import nl.soccar.socnet.Node;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import nl.soccar.gameserver.message.JoinSessionMessage;
-import nl.soccar.gameserver.message.MovePlayerMessage;
-import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
-import nl.soccar.gameserver.message.PlayerLeftSessionMessage;
-import nl.soccar.gameserver.message.PlayerStartedGameMessage;
-import nl.soccar.gameserver.rmi.GameServerController;
-import nl.soccar.library.*;
-import nl.soccar.library.enumeration.BallType;
-import nl.soccar.library.enumeration.Duration;
-import nl.soccar.library.enumeration.HandbrakeAction;
-import nl.soccar.library.enumeration.MapType;
-import nl.soccar.library.enumeration.SteerAction;
-import nl.soccar.library.enumeration.TeamColour;
-import nl.soccar.library.enumeration.ThrottleAction;
-import nl.soccar.socnet.Node;
-import nl.soccar.socnet.connection.Connection;
 
 /**
  * @author PTS34A
