@@ -125,7 +125,7 @@ public class GameServerController {
         try {
             mainServerForGameServer.increaseSessionOccupancy(gameServerForMainServer, roomName);
         } catch (RemoteException e) {
-            LOGGER.log(Level.SEVERE, "An error occurred while reporting a destroyed session.", e);
+            LOGGER.log(Level.SEVERE, "An error occurred while reporting increased occupancy for a session.", e);
         }
     }
 
@@ -133,7 +133,7 @@ public class GameServerController {
         try {
             mainServerForGameServer.decreaseSessionOccupancy(gameServerForMainServer, roomName);
         } catch (RemoteException e) {
-            LOGGER.log(Level.SEVERE, "An error occurred while reporting a destroyed session.", e);
+            LOGGER.log(Level.SEVERE, "An error occurred while reporting decreased occupancy for a session.", e);
         }
     }
 
@@ -141,7 +141,7 @@ public class GameServerController {
         try {
             mainServerForGameServer.hostChanged(gameServerForMainServer, roomName, host);
         } catch (RemoteException e) {
-            LOGGER.log(Level.SEVERE, "An error occurred while reporting a destroyed session.", e);
+            LOGGER.log(Level.SEVERE, "An error occurred while reporting a changed host.", e);
         }
     }
 
