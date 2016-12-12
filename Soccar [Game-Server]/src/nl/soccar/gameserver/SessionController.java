@@ -100,7 +100,7 @@ public class SessionController {
                 return JoinSessionMessage.Status.INVALID_PASSWORD;
             }
 
-            if (room.getAllPlayers().stream().map(Player::getUsername).anyMatch(n -> player.getUsername().equals(n))) {
+            if (room.getAllPlayers().stream().anyMatch(player::equals)) {
                 return JoinSessionMessage.Status.USERNAME_EXISTS;
             }
 
@@ -154,7 +154,7 @@ public class SessionController {
 
         Team teamBlue = room.getTeamBlue();
 
-        TeamColour colour = teamBlue.getPlayers().stream().filter(p -> p.getUsername().equals(player.getUsername())).count() > 0 ? TeamColour.BLUE : TeamColour.RED;
+        TeamColour colour = teamBlue.getPlayers().stream().filter(player::equals).count() > 0 ? TeamColour.BLUE : TeamColour.RED;
         leaveSession(player, colour, session);
     }
 
