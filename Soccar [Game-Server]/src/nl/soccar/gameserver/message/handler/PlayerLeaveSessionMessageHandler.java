@@ -26,13 +26,10 @@ public class PlayerLeaveSessionMessageHandler extends MessageHandler<PlayerLeave
 
         Session session = player.getCurrentSession();
         if (session == null) {
-            connection.close();
             return;
         }
         
-        if (!SessionController.getInstance().leaveSession(player, message.getTeamColour(), session)) {
-            connection.close();
-        }
+        SessionController.getInstance().leaveSession(player, session);
     }
 
     @Override
