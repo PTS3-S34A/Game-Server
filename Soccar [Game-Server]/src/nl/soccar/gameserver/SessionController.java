@@ -88,7 +88,13 @@ public class SessionController {
                 return JoinSessionMessage.Status.SESSION_NON_EXISTENT;
             }
 
-            return wrapper.join(player, password);
+
+            JoinSessionMessage.Status status = wrapper.join(player, password);
+            if (status == JoinSessionMessage.Status.SUCCESS) {
+                controller.increaseOccupancy(name);
+            }
+
+            return status;
         }
     }
 
@@ -97,7 +103,8 @@ public class SessionController {
             return;
         }
 
-        String name = session.getRoom().getName();
+        Room room = session.getRoom();
+        String name = room.getName();
         synchronized (sessions) {
             SessionWrapper wrapper = sessions.get(name);
             if (wrapper == null) {
@@ -108,6 +115,15 @@ public class SessionController {
         }
 
         LOGGER.log(Level.INFO, "Player {0} left session.", new String[]{player.getUsername()});
+
+
+        if (room.getOccupancy() <= 0) {
+            destroySession(session);
+            return;
+        }
+
+        controller.changeHost(name, room.getHost().getUsername());
+        controller.decreaseOccupancy(name);
     }
 
     public void startGame(Session session) {

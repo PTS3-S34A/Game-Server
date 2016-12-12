@@ -109,7 +109,6 @@ public class GameServerController {
             session.setOccupation(1);
 
             mainServerForGameServer.sessionCreated(gameServerForMainServer, session);
-
         } catch (UnknownHostException | RemoteException e) {
             LOGGER.log(Level.SEVERE, "An error occurred while reporting a created session.", e);
         }
@@ -118,6 +117,30 @@ public class GameServerController {
     public void sessionDestroyed(String roomName) {
         try {
             mainServerForGameServer.sessionDestroyed(gameServerForMainServer, roomName);
+        } catch (RemoteException e) {
+            LOGGER.log(Level.SEVERE, "An error occurred while reporting a destroyed session.", e);
+        }
+    }
+
+    public void increaseOccupancy(String roomName) {
+        try {
+            mainServerForGameServer.increaseSessionOccupancy(gameServerForMainServer, roomName);
+        } catch (RemoteException e) {
+            LOGGER.log(Level.SEVERE, "An error occurred while reporting a destroyed session.", e);
+        }
+    }
+
+    public void decreaseOccupancy(String roomName) {
+        try {
+            mainServerForGameServer.decreaseSessionOccupancy(gameServerForMainServer, roomName);
+        } catch (RemoteException e) {
+            LOGGER.log(Level.SEVERE, "An error occurred while reporting a destroyed session.", e);
+        }
+    }
+
+    public void changeHost(String roomName, String host) {
+        try {
+            mainServerForGameServer.hostChanged(gameServerForMainServer, roomName, host);
         } catch (RemoteException e) {
             LOGGER.log(Level.SEVERE, "An error occurred while reporting a destroyed session.", e);
         }
