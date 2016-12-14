@@ -4,6 +4,7 @@ import nl.soccar.gameserver.message.JoinSessionMessage;
 import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
 import nl.soccar.gameserver.message.PlayerLeftSessionMessage;
 import nl.soccar.gameserver.message.PlayerStartedGameMessage;
+import nl.soccar.gameserver.message.SwitchTeamMessage;
 import nl.soccar.library.*;
 import nl.soccar.library.enumeration.TeamColour;
 import nl.soccar.socnet.Node;
@@ -93,6 +94,19 @@ public final class SessionWrapper {
 
         Game game = session.getGame();
         game.start();
+    }
+    
+    public void switchTeamFromPlayer(Player player) {
+        Room room = session.getRoom();
+        
+        Team team = getTeamFromPlayer(player);
+        Team otherTeam = team.getTeamColour() == TeamColour.BLUE ? room.getTeamRed() : room.getTeamBlue();
+        
+        team.leave(player);
+        otherTeam.join(player);
+        
+        SwitchTeamMessage m = new SwitchTeamMessage(player.getUsername(), otherTeam.getTeamColour());
+        room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
     }
 
     private Team getTeamFromPlayer(Player player) {
