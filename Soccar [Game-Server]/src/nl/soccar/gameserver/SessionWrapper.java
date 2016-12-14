@@ -40,6 +40,8 @@ public final class SessionWrapper {
         Team teamBlue = room.getTeamBlue();
         Team teamRed = room.getTeamRed();
 
+        System.out.println("Yo man, the occupation is now: " + occupation);
+
         Team team = occupation % 2 == 0 ? teamBlue : teamRed;
         team.join(player);
 
