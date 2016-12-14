@@ -13,10 +13,25 @@ public final class ChatMessageHandler extends MessageHandler<ChatMessage> {
 
     @Override
     protected void handle(Connection connection, ChatMessage message) throws Exception {
+        String text = message.getMessage();
+        if (text == null || text.trim().isEmpty() || text.length() > 75) {
+            return;
+        }
+
         Node server = connection.getNode();
+        if (server == null) {
+            return;
+        }
 
         Player player = connection.getPlayer();
+        if (player == null) {
+            return;
+        }
+
         Session session = player.getCurrentSession();
+        if (session == null) {
+            return;
+        }
 
         session.getRoom().getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(message));
     }
