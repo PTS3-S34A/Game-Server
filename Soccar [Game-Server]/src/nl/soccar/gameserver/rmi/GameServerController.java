@@ -14,15 +14,7 @@ import java.util.logging.Logger;
 
 import nl.soccar.gameserver.GameServerConnectionListener;
 import nl.soccar.gameserver.SessionController;
-import nl.soccar.gameserver.message.JoinSessionMessage;
-import nl.soccar.gameserver.message.MovePlayerMessage;
-import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
-import nl.soccar.gameserver.message.PlayerLeaveSessionMessage;
-import nl.soccar.gameserver.message.PlayerLeftSessionMessage;
-import nl.soccar.gameserver.message.PlayerMovedMessage;
-import nl.soccar.gameserver.message.PlayerStartedGameMessage;
-import nl.soccar.gameserver.message.RegisterPlayerMessage;
-import nl.soccar.gameserver.message.StartGameMessage;
+import nl.soccar.gameserver.message.*;
 import nl.soccar.library.SessionData;
 import nl.soccar.rmi.RmiConstants;
 import nl.soccar.rmi.interfaces.IMainServerForGameServer;
@@ -76,6 +68,7 @@ public class GameServerController {
             registry.register(StartGameMessage.class);
             registry.register(MovePlayerMessage.class);
             registry.register(PlayerMovedMessage.class);
+            registry.register(ChatMessage.class);
 
             SessionController.setInstance(this, server);
 
