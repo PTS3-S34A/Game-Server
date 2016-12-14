@@ -125,6 +125,22 @@ public class SessionController {
         controller.changeHost(name, room.getHost().getUsername());
         controller.decreaseOccupancy(name);
     }
+    
+    public void switchTeamFromPlayer(Player player) {
+        if (player == null) {
+            return;
+        }
+        
+        String name = player.getCurrentSession().getRoom().getName();
+        synchronized (sessions) {
+            SessionWrapper wrapper = sessions.get(name);
+            if (wrapper == null) {
+                return;
+            }
+
+            wrapper.switchTeamFromPlayer(player);
+        }
+    }
 
     public void startGame(Session session) {
         if (session == null) {
