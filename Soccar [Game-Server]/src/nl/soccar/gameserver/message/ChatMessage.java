@@ -2,6 +2,7 @@ package nl.soccar.gameserver.message;
 
 import nl.soccar.gameserver.message.handler.ChatMessageHandler;
 import nl.soccar.library.Player;
+import nl.soccar.library.enumeration.Privilege;
 import nl.soccar.socnet.message.Message;
 import nl.soccar.socnet.message.MessageConstants;
 import nl.soccar.socnet.message.MessageEvent;
@@ -9,16 +10,22 @@ import nl.soccar.socnet.message.MessageEvent;
 @MessageEvent(id = MessageConstants.CHAT_MESSAGE_ID, handler = ChatMessageHandler.class)
 public final class ChatMessage extends Message {
 
-    private final Player player;
+    private final int playerId;
+    private final Privilege privilege;
     private final String message;
 
-    public ChatMessage(Player player, String message) {
-        this.player = player;
+    public ChatMessage(int playerId, Privilege privilege, String message) {
+        this.playerId = playerId;
+        this.privilege = privilege;
         this.message = message;
     }
 
-    public Player getPlayer() {
-        return player;
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    public Privilege getPrivilege() {
+        return privilege;
     }
 
     public String getMessage() {

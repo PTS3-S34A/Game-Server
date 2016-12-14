@@ -9,7 +9,12 @@ import nl.soccar.library.enumeration.TeamColour;
 import nl.soccar.socnet.Node;
 import nl.soccar.socnet.connection.Connection;
 
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public final class SessionWrapper {
+
+    private static final Random RANDOM = new Random();
 
     private final Node server;
     private final SessionController controller;
@@ -40,17 +45,25 @@ public final class SessionWrapper {
         Team teamBlue = room.getTeamBlue();
         Team teamRed = room.getTeamRed();
 
-        System.out.println("Yo man, the occupation is now: " + occupation);
-
         Team team = occupation % 2 == 0 ? teamBlue : teamRed;
         team.join(player);
 
         player.setCurrentSession(session);
+        player.setPlayerId(getNextId());
 
         sendJoinSessionResponse(player);
         sendJoinedSessionNotification(player, team.getTeamColour());
 
         return JoinSessionMessage.Status.SUCCESS;
+    }
+
+    private int getNextId() {
+        final AtomicInteger id = new AtomicInteger(0);
+        while (session.getRoom().getAllPlayers().stream().filter(p -> p.getPlayerId() == id.get()).findFirst().isPresent()) {
+            id.set(RANDOM.nextInt(Byte.MAX_VALUE));
+        }
+
+        return id.get();
     }
 
     private void sendJoinSessionResponse(Player player) {
@@ -62,15 +75,15 @@ public final class SessionWrapper {
         connection.send(new JoinSessionMessage(JoinSessionMessage.Status.SUCCESS, room.getName(), room.getCapacity(), game.getGameSettings()));
 
         // Send the connecting player all stuff
-        room.getTeamBlue().getPlayers().stream().filter(p -> !p.equals(player)).map(p -> new PlayerJoinedSessionMessage(p, TeamColour.BLUE)).forEach(connection::send);
-        room.getTeamRed().getPlayers().stream().filter(p -> !p.equals(player)).map(p -> new PlayerJoinedSessionMessage(p, TeamColour.RED)).forEach(connection::send);
+        room.getTeamBlue().getPlayers().stream().filter(p -> !p.equals(player)).map(p -> new PlayerJoinedSessionMessage(p.getPlayerId(), p.getUsername(), p.getPrivilege(), p.getCarType(), TeamColour.BLUE)).forEach(connection::send);
+        room.getTeamRed().getPlayers().stream().filter(p -> !p.equals(player)).map(p -> new PlayerJoinedSessionMessage(p.getPlayerId(), p.getUsername(), p.getPrivilege(), p.getCarType(), TeamColour.RED)).forEach(connection::send);
     }
 
     private void sendJoinedSessionNotification(Player player, TeamColour team) {
         Room room = session.getRoom();
 
         // Send notification to all players that the connecting player joined
-        PlayerJoinedSessionMessage m = new PlayerJoinedSessionMessage(player, team);
+        PlayerJoinedSessionMessage m = new PlayerJoinedSessionMessage(player.getPlayerId(), player.getUsername(), player.getPrivilege(), player.getCarType(), team);
         room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
     }
 
@@ -81,8 +94,10 @@ public final class SessionWrapper {
         team.leave(player);
         player.setCurrentSession(null);
 
-        PlayerLeftSessionMessage m = new PlayerLeftSessionMessage(player.getUsername(), team.getTeamColour());
+        PlayerLeftSessionMessage m = new PlayerLeftSessionMessage(player.getPlayerId());
         room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
+
+        player.setPlayerId(0);
     }
 
     public void startGame() {

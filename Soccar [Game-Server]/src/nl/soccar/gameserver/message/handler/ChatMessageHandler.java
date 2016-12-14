@@ -38,10 +38,8 @@ public final class ChatMessageHandler extends MessageHandler<ChatMessage> {
 
     @Override
     protected void encode(Connection connection, ChatMessage message, ByteBuf buf) throws Exception {
-        Player player = message.getPlayer();
-
-        ByteBufUtilities.writeString(player.getUsername(), buf);
-        buf.writeByte(player.getPrivilege().getId());
+        buf.writeByte(message.getPlayerId());
+        buf.writeByte(message.getPrivilege().getId());
         ByteBufUtilities.writeString(message.getMessage(), buf);
     }
 
@@ -53,7 +51,7 @@ public final class ChatMessageHandler extends MessageHandler<ChatMessage> {
         }
 
         Player player = connection.getPlayer();
-        return new ChatMessage(player, message);
+        return new ChatMessage(player.getPlayerId(), player.getPrivilege(), message);
     }
 
 }

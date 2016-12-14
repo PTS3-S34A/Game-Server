@@ -18,8 +18,7 @@ public final class PlayerLeftSessionMessageHandler extends MessageHandler<Player
 
     @Override
     protected void encode(Connection connection, PlayerLeftSessionMessage message, ByteBuf buf) throws Exception {
-        ByteBufUtilities.writeString(message.getUsername(), buf);
-        buf.writeByte(message.getTeam().getId());
+        buf.writeByte(message.getPlayerId());
     }
 
     @Override
