@@ -69,6 +69,7 @@ public class GameServerController {
             registry.register(MovePlayerMessage.class);
             registry.register(PlayerMovedMessage.class);
             registry.register(ChatMessage.class);
+            registry.register(SwitchTeamMessage.class);
 
             SessionController.setInstance(this, server);
 
