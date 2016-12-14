@@ -19,11 +19,11 @@ public final class PlayerJoinedSessionMessageHandler extends MessageHandler<Play
 
     @Override
     protected void encode(Connection connection, PlayerJoinedSessionMessage message, ByteBuf buf) throws Exception {
-        Player player = message.getPlayer();
+        buf.writeByte(message.getPlayerId());
+        ByteBufUtilities.writeString(message.getUsername(), buf);
+        buf.writeByte(message.getPrivilege().getId());
 
-        ByteBufUtilities.writeString(player.getUsername(), buf);
-        buf.writeByte(player.getPrivilege().getId());
-        buf.writeByte(player.getCarType().getId());
+        buf.writeByte(message.getCarType().getId());
         buf.writeByte(message.getTeam().getId());
     }
 

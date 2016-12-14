@@ -1,6 +1,7 @@
 package nl.soccar.gameserver.message;
 
 import nl.soccar.gameserver.message.handler.MovePlayerMessageHandler;
+import nl.soccar.library.Player;
 import nl.soccar.library.enumeration.HandbrakeAction;
 import nl.soccar.library.enumeration.SteerAction;
 import nl.soccar.library.enumeration.ThrottleAction;
@@ -15,20 +16,20 @@ import nl.soccar.socnet.message.MessageEvent;
 @MessageEvent(id = MessageConstants.MOVE_PLAYER_MESSAGE_ID, handler = MovePlayerMessageHandler.class)
 public final class MovePlayerMessage extends Message {
 
-    private final String username;
+    private final int playerId;
     private final SteerAction steerAction;
     private final HandbrakeAction handbrakeAction;
     private final ThrottleAction throttleAction;
 
-    public MovePlayerMessage(String username, SteerAction steerAction, HandbrakeAction handbrakeAction, ThrottleAction throttleAction) {
-        this.username = username;
+    public MovePlayerMessage(int playerId, SteerAction steerAction, HandbrakeAction handbrakeAction, ThrottleAction throttleAction) {
+        this.playerId = playerId;
         this.steerAction = steerAction;
         this.handbrakeAction = handbrakeAction;
         this.throttleAction = throttleAction;
     }
 
-    public String getUsername() {
-        return username;
+    public int getPlayerId() {
+        return playerId;
     }
 
     public SteerAction getSteerAction() {

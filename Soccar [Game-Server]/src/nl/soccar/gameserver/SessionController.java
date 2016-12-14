@@ -147,7 +147,7 @@ public class SessionController {
     public void movePlayer(Player player, SteerAction steerAction, HandbrakeAction handbrakeAction, ThrottleAction throttleAction) {
         Room room = player.getCurrentSession().getRoom();
 
-        MovePlayerMessage m = new MovePlayerMessage(player.getUsername(), steerAction, handbrakeAction, throttleAction);
+        MovePlayerMessage m = new MovePlayerMessage(player.getPlayerId(), steerAction, handbrakeAction, throttleAction);
         room.getAllPlayers().stream().filter(p -> !p.equals(player)).map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
     }
 

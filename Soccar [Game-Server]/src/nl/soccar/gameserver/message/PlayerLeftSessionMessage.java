@@ -13,20 +13,14 @@ import nl.soccar.socnet.message.MessageEvent;
 @MessageEvent(id = MessageConstants.PLAYER_LEFT_SESSION_MESSAGE_ID, handler = PlayerLeftSessionMessageHandler.class)
 public final class PlayerLeftSessionMessage extends Message {
 
-    private final String username;
-    private final TeamColour team;
+    private final int playerId;
 
-    public PlayerLeftSessionMessage(String username, TeamColour team) {
-        this.username = username;
-        this.team = team;
+    public PlayerLeftSessionMessage(int playerId) {
+        this.playerId = playerId;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public TeamColour getTeam() {
-        return team;
+    public int getPlayerId() {
+        return playerId;
     }
 
     @Override

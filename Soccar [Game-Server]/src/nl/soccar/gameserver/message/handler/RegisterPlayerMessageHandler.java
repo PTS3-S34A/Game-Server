@@ -21,7 +21,7 @@ public final class RegisterPlayerMessageHandler extends MessageHandler<RegisterP
 
     @Override
     protected void handle(Connection connection, RegisterPlayerMessage message) throws Exception {
-        Player player = new Player(message.getUsername(), Privilege.NORMAL, message.getCarType());
+        Player player = new Player(message.getUsername(), Privilege.GUEST, message.getCarType());
 
         connection.getNode().addConnection(player, connection);
         connection.setPlayer(player);
