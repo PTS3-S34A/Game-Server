@@ -1,10 +1,6 @@
 package nl.soccar.gameserver;
 
-import nl.soccar.gameserver.message.JoinSessionMessage;
-import nl.soccar.gameserver.message.PlayerJoinedSessionMessage;
-import nl.soccar.gameserver.message.PlayerLeftSessionMessage;
-import nl.soccar.gameserver.message.PlayerStartedGameMessage;
-import nl.soccar.gameserver.message.SwitchTeamMessage;
+import nl.soccar.gameserver.message.*;
 import nl.soccar.library.*;
 import nl.soccar.library.enumeration.TeamColour;
 import nl.soccar.socnet.Node;
@@ -119,8 +115,8 @@ public final class SessionWrapper {
         
         team.leave(player);
         otherTeam.join(player);
-        
-        SwitchTeamMessage m = new SwitchTeamMessage(player.getUsername(), otherTeam.getTeamColour());
+
+        SwitchTeamMessage m = new SwitchTeamMessage(player.getPlayerId(), otherTeam.getTeamColour());
         room.getAllPlayers().stream().map(server::getConnectionFromPlayer).forEach(c -> c.send(m));
     }
 
