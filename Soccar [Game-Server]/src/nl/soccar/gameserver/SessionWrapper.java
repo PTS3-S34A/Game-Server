@@ -55,7 +55,7 @@ public final class SessionWrapper {
     }
 
     private int getNextId() {
-        final AtomicInteger id = new AtomicInteger(0);
+        final AtomicInteger id = new AtomicInteger(RANDOM.nextInt(Byte.MAX_VALUE));
         while (session.getRoom().getAllPlayers().stream().filter(p -> p.getPlayerId() == id.get()).findFirst().isPresent()) {
             id.set(RANDOM.nextInt(Byte.MAX_VALUE));
         }
