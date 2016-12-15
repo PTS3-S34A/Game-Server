@@ -1,7 +1,6 @@
 package nl.soccar.gameserver.message.handler;
 
 import io.netty.buffer.ByteBuf;
-import nl.soccar.gamecommuncation.util.ByteBufUtilities;
 import nl.soccar.gameserver.SessionController;
 import nl.soccar.gameserver.message.SwitchTeamMessage;
 import nl.soccar.library.Player;
@@ -26,7 +25,7 @@ public final class SwitchTeamMessageHandler extends MessageHandler<SwitchTeamMes
 
     @Override
     protected void encode(Connection connection, SwitchTeamMessage message, ByteBuf buf) throws Exception {
-        ByteBufUtilities.writeString(message.getUsername(), buf);
+        buf.writeByte(message.getPlayerId());
         buf.writeByte(message.getTeamColour().getId());
     }
 

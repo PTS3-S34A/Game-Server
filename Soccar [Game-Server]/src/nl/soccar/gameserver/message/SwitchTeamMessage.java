@@ -13,21 +13,21 @@ import nl.soccar.socnet.message.MessageEvent;
 @MessageEvent(id = MessageConstants.SWITCH_TEAM_MESSAGE_ID, handler = SwitchTeamMessageHandler.class)
 public final class SwitchTeamMessage extends Message {
 
-    private final String username;
+    private final int playerId;
     private final TeamColour team;
-    
-    public SwitchTeamMessage(String username, TeamColour team) {
-        this.username = username;
+
+    public SwitchTeamMessage(int playerId, TeamColour team) {
+        this.playerId = playerId;
         this.team = team;
     }
     
     public SwitchTeamMessage() {
-        username = null;
+        playerId = -1;
         team = null;
     }
-    
-    public String getUsername() {
-        return username;
+
+    public int getPlayerId() {
+        return playerId;
     }
     
     public TeamColour getTeamColour() {
