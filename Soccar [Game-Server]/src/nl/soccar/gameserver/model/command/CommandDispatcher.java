@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Lesley
+ * @author PTS34A
  */
 public final class CommandDispatcher {
 

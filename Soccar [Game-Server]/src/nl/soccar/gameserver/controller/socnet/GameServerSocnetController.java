@@ -7,7 +7,7 @@ import nl.soccar.socnet.message.MessageRegistry;
 import java.io.IOException;
 
 /**
- * @author Lesley
+ * @author PTS34A
  */
 public final class GameServerSocnetController {
 

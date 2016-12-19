@@ -7,7 +7,7 @@ import nl.soccar.gameserver.model.session.SessionWrapper;
 import nl.soccar.library.enumeration.Privilege;
 
 /**
- * @author Lesley
+ * @author PTS34A
  */
 public abstract class CommandListener {
 

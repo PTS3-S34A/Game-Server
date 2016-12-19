@@ -9,6 +9,9 @@ import nl.soccar.gameserver.model.session.SessionWrapper;
 import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
 
+/**
+ * @author PTS34A
+ */
 public final class ChatMessageHandler extends MessageHandler<ChatMessage> {
 
     @Override

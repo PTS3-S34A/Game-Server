@@ -5,6 +5,9 @@ import nl.soccar.socnet.message.Message;
 import nl.soccar.socnet.message.MessageConstants;
 import nl.soccar.socnet.message.MessageEvent;
 
+/**
+ * @author PTS34A
+ */
 @MessageEvent(id = MessageConstants.SYNC_POSITION_BALL_MESSAGE_ID, handler = BallSyncMessageHandler.class)
 public final class BallSyncMessage extends Message {
 

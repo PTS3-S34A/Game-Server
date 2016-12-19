@@ -26,7 +26,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * @author Lesley
+ * @author PTS34A
  */
 public final class GameWrapper {
 

@@ -3,7 +3,7 @@ package nl.soccar.gameserver.model.session;
 import nl.soccar.library.Session;
 
 /**
- * @author Lesley
+ * @author PTS34A
  */
 public final class SessionWrapper {
 

@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Lesley
+ * @author PTS34A
  */
 public final class RoomWrapper {
 

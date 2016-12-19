@@ -5,6 +5,9 @@ import nl.soccar.gameserver.controller.socnet.message.BallSyncMessage;
 import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
 
+/**
+ * @author PTS34A
+ */
 public final class BallSyncMessageHandler extends MessageHandler<BallSyncMessage> {
 
     @Override

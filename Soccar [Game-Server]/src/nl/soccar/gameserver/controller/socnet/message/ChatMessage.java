@@ -6,6 +6,9 @@ import nl.soccar.socnet.message.Message;
 import nl.soccar.socnet.message.MessageConstants;
 import nl.soccar.socnet.message.MessageEvent;
 
+/**
+ * @author PTS34A
+ */
 @MessageEvent(id = MessageConstants.CHAT_MESSAGE_ID, handler = ChatMessageHandler.class)
 public final class ChatMessage extends Message {
 

@@ -8,7 +8,7 @@ import nl.soccar.library.enumeration.Privilege;
 import nl.soccar.socnet.connection.Connection;
 
 /**
- * @author Lesley
+ * @author PTS34A
  */
 public final class PlayerWrapper {
 

@@ -1,7 +1,7 @@
 package nl.soccar.gameserver.model.command;
 
 /**
- * @author Lesley
+ * @author PTS34A
  */
 public final class Command {
 
