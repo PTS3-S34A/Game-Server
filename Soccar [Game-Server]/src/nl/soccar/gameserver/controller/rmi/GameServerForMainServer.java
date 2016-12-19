@@ -26,6 +26,11 @@ public final class GameServerForMainServer extends UnicastRemoteObject implement
         return GameServer.getInstance().getSessionController().createSession(name, password, hostName, capacity, duration, mapType, ballType);
     }
 
+    @Override
+    public int getAvailableMemory() throws RemoteException {
+        return (int) Runtime.getRuntime().freeMemory();
+    }
+
     public final void close() throws IOException {
         UnicastRemoteObject.unexportObject(this, true);
     }
