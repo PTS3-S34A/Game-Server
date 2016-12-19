@@ -1,6 +1,5 @@
 package nl.soccar.gameserver.model.session;
 
-import nl.soccar.gameserver.GameServerConstants;
 import nl.soccar.gameserver.controller.rmi.GameServerRmiController;
 import nl.soccar.gameserver.controller.socnet.message.*;
 import nl.soccar.gameserver.model.GameServer;
@@ -157,7 +156,7 @@ public final class RoomWrapper {
 
     public void mutePlayer(PlayerWrapper issuer, String username) {
         String lower = username.toLowerCase();
-        if (mutedNames.contains(lower) || GameServerConstants.ADMINISTRATOR_USERNAMES.contains(lower)) {
+        if (mutedNames.contains(lower)) {
             return;
         }
 
@@ -175,10 +174,6 @@ public final class RoomWrapper {
     }
 
     public void unmutePlayer(PlayerWrapper issuer, String username) {
-        if (GameServerConstants.ADMINISTRATOR_USERNAMES.contains(username.toLowerCase())) {
-            return;
-        }
-
         mutedNames.remove(username.toLowerCase());
         issuer.getConnection().send(new ChatMessage(-1, Privilege.ADMINISTRATOR, String.format("You have unmuted %s.", username)));
 

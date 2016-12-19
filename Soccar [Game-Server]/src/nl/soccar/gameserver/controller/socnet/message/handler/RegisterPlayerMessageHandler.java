@@ -2,7 +2,6 @@ package nl.soccar.gameserver.controller.socnet.message.handler;
 
 import io.netty.buffer.ByteBuf;
 import nl.soccar.gamecommuncation.util.ByteBufUtilities;
-import nl.soccar.gameserver.GameServerConstants;
 import nl.soccar.gameserver.controller.socnet.message.RegisterPlayerMessage;
 import nl.soccar.gameserver.model.GameServer;
 import nl.soccar.gameserver.model.PlayerWrapper;
@@ -20,7 +19,7 @@ public final class RegisterPlayerMessageHandler extends MessageHandler<RegisterP
     @Override
     protected void handle(Connection connection, RegisterPlayerMessage message) throws Exception {
         String username = message.getUsername();
-        Privilege privilege = GameServerConstants.ADMINISTRATOR_USERNAMES.contains(username.toLowerCase()) ? Privilege.ADMINISTRATOR : Privilege.GUEST;
+        Privilege privilege = Privilege.GUEST;
 
         Player player = new Player(username, privilege, message.getCarType());
         PlayerWrapper wrapper = new PlayerWrapper(connection, player);
