@@ -27,7 +27,7 @@ public final class MapUtilities {
         addWestWalls(engine, map, mapHeight);
         addEastWalls(engine, map, mapWidth, mapHeight);
         addNorthAndSouthWalls(engine, mapWidth, mapHeight);
-        addCornerWalls(engine, mapWidth, mapHeight);
+        //addCornerWalls(engine, mapWidth, mapHeight);
     }
 
     /**
