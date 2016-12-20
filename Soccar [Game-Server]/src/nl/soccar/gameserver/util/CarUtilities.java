@@ -1,6 +1,7 @@
 package nl.soccar.gameserver.util;
 
 import javafx.scene.shape.Rectangle;
+import nl.soccar.gameserver.model.session.GameWrapper;
 import nl.soccar.library.*;
 import nl.soccar.library.enumeration.TeamColour;
 import nl.soccar.physics.GameEngine;
@@ -18,23 +19,26 @@ public final class CarUtilities {
     private CarUtilities() {
     }
 
-    public static void addCars(GameEngine engine, Map map, Team blue, Team red) {
-        addCars(engine, map, blue);
-        addCars(engine, map, red);
+    public static void addCars(GameWrapper game, Team blue, Team red) {
+        addCars(game, blue);
+        addCars(game, red);
     }
 
-    private static void addCars(GameEngine engine, Map map, Team team) {
+    private static void addCars(GameWrapper game, Team team) {
         List<Player> players = new ArrayList<>(team.getPlayers());
         Collections.shuffle(players);
 
         int teamSize = players.size();
         for (int i = 0; i < teamSize; i++) {
             Player player = players.get(i);
-            addCar(engine, map, player, team, teamSize, i);
+            addCar(game, player, team, teamSize, i);
         }
     }
 
-    private static void addCar(GameEngine engine, Map map, Player player, Team team, int teamSize, int number) {
+    private static void addCar(GameWrapper game, Player player, Team team, int teamSize, int number) {
+        GameEngine engine = game.getGameEngine();
+        Map map = game.getMap();
+
         Rectangle size = map.getSize();
         float width = (float) size.getWidth();
         float height = (float) size.getHeight();
