@@ -229,6 +229,14 @@ public final class RoomWrapper {
         }
     }
 
+    public int getOccupation() {
+        return room.getOccupancy();
+    }
+
+    public int getCapacity() {
+        return room.getCapacity();
+    }
+
     public PlayerWrapper getHost() {
         synchronized (players) {
             Optional<PlayerWrapper> optional = players.stream().filter(p -> p.getUsername().equals(room.getHost().getUsername())).findFirst();
