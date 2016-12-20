@@ -9,6 +9,7 @@ import nl.soccar.rmi.interfaces.IGameServerForMainServer;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import nl.soccar.rmi.RmiConstants;
 
 /**
  * @author PTS34A
@@ -27,8 +28,13 @@ public final class GameServerForMainServer extends UnicastRemoteObject implement
     }
 
     @Override
-    public int getAvailableMemory() throws RemoteException {
-        return (int) Runtime.getRuntime().freeMemory();
+    public long getAvailableMemory() throws RemoteException {
+        return Runtime.getRuntime().freeMemory();
+    }
+
+    @Override
+    public int ping(int value) throws RemoteException {
+        return value * RmiConstants.PING_CALCULATION_FACTOR;
     }
 
     public final void close() throws IOException {
