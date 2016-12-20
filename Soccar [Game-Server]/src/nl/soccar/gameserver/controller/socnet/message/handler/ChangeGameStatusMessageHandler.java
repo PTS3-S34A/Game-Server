@@ -1,7 +1,7 @@
 package nl.soccar.gameserver.controller.socnet.message.handler;
 
 import io.netty.buffer.ByteBuf;
-import nl.soccar.gameserver.controller.socnet.message.StartGameMessage;
+import nl.soccar.gameserver.controller.socnet.message.ChangeGameStatusMessage;
 import nl.soccar.gameserver.model.GameServer;
 import nl.soccar.gameserver.model.PlayerWrapper;
 import nl.soccar.gameserver.model.session.GameWrapper;
@@ -12,10 +12,10 @@ import nl.soccar.socnet.message.MessageHandler;
 /**
  * @author PTS34A
  */
-public final class StartGameMessageHandler extends MessageHandler<StartGameMessage> {
+public final class ChangeGameStatusMessageHandler extends MessageHandler<ChangeGameStatusMessage> {
 
     @Override
-    protected void handle(Connection connection, StartGameMessage message) throws Exception {
+    protected void handle(Connection connection, ChangeGameStatusMessage message) throws Exception {
         GameServer server = GameServer.getInstance();
         PlayerWrapper player = server.getPlayer(connection);
         if (player == null) {
@@ -28,17 +28,17 @@ public final class StartGameMessageHandler extends MessageHandler<StartGameMessa
         }
 
         GameWrapper game = session.getGame();
-        game.start();
+        game.requestStart();
     }
 
     @Override
-    protected void encode(Connection connection, StartGameMessage message, ByteBuf buf) throws Exception {
+    protected void encode(Connection connection, ChangeGameStatusMessage message, ByteBuf buf) throws Exception {
         throw new UnsupportedOperationException("Encoding is not supported on Server.");
     }
 
     @Override
-    protected StartGameMessage decode(Connection connection, ByteBuf buf) throws Exception {
-        return new StartGameMessage();
+    protected ChangeGameStatusMessage decode(Connection connection, ByteBuf buf) throws Exception {
+        return new ChangeGameStatusMessage();
     }
 
 }

@@ -1,9 +1,6 @@
 package nl.soccar.gameserver.model.session;
 
-import nl.soccar.gameserver.controller.socnet.message.BallSyncMessage;
-import nl.soccar.gameserver.controller.socnet.message.MovePlayerMessage;
-import nl.soccar.gameserver.controller.socnet.message.PlayerStartedGameMessage;
-import nl.soccar.gameserver.controller.socnet.message.PlayerSyncMessage;
+import nl.soccar.gameserver.controller.socnet.message.*;
 import nl.soccar.gameserver.model.PlayerWrapper;
 import nl.soccar.gameserver.util.CarUtilities;
 import nl.soccar.gameserver.util.MapUtilities;
@@ -18,39 +15,46 @@ import nl.soccar.library.enumeration.ThrottleAction;
 import nl.soccar.physics.GameEngine;
 import nl.soccar.physics.models.BallPhysics;
 import nl.soccar.physics.models.CarPhysics;
+import nl.soccar.physics.models.ObstaclePhysics;
+import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.Message;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 /**
  * @author PTS34A
  */
 public final class GameWrapper {
 
+    private final List<PlayerWrapper> playersReady = new ArrayList<>();
+
     private final SessionWrapper session;
     private final Game game;
 
     private final GameEngine engine;
-    private final Timer timer;
+    private Timer timer;
 
     public GameWrapper(SessionWrapper session, Game game) {
         this.session = session;
         this.game = game;
 
         engine = new GameEngine(game);
-        timer = new Timer();
     }
 
-    public void start() {
+    public void requestStart() {
         initializeWorldObjects();
         sendGameInformation();
+    }
 
+    private void start() {
         engine.start();
-        game.start();
+        game.setPaused(false);
 
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -70,8 +74,16 @@ public final class GameWrapper {
     public void stop() {
         timer.cancel();
 
-        game.stop();
         engine.stop();
+
+        playersReady.clear();
+    }
+
+    public void sendWorldObjects(PlayerWrapper player) {
+        sendCars(player);
+        sendObstacles(player);
+
+        player.getConnection().send(new ChangePlayerStatusMessage(ChangePlayerStatusMessage.Status.READY_TO_PLAY));
     }
 
     public void movePlayer(PlayerWrapper player, SteerAction steerAction, HandbrakeAction handbrakeAction, ThrottleAction throttleAction) {
@@ -92,24 +104,61 @@ public final class GameWrapper {
                 .forEach(c -> c.send(message));
     }
 
+    public void setPlayerReady(PlayerWrapper player) {
+        playersReady.add(player);
+
+        if (playersReady.size() >= session.getRoom().getOccupation()) {
+            start();
+
+            PlayerChangedGameStatusMessage message = new PlayerChangedGameStatusMessage(PlayerChangedGameStatusMessage.Status.GAME_RUNNING);
+            playersReady.stream()
+                    .map(PlayerWrapper::getConnection)
+                    .forEach(c -> c.send(message));
+        }
+    }
+
     private void initializeWorldObjects() {
         RoomWrapper room = session.getRoom();
         Map map = game.getMap();
 
         MapUtilities.addWalls(engine, map);
-        CarUtilities.addCars(engine, map, room.getTeamBlue(), room.getTeamRed());
+        CarUtilities.addCars(this, room.getTeamBlue(), room.getTeamRed());
 
         BallPhysics ball = new BallPhysics(session.getGame().getMap().getBall(), engine.getWorld());
         engine.addWorldObject(ball);
     }
 
     private void sendGameInformation() {
-        RoomWrapper room = session.getRoom();
-
-        PlayerStartedGameMessage message = new PlayerStartedGameMessage();
-        room.getPlayers().stream()
+        PlayerChangedGameStatusMessage message = new PlayerChangedGameStatusMessage(PlayerChangedGameStatusMessage.Status.GAME_PAUSED);
+        session.getRoom().getPlayers().stream()
                 .map(PlayerWrapper::getConnection)
                 .forEach(c -> c.send(message));
+    }
+
+    private void sendCars(PlayerWrapper player) {
+        List<Car> cars = session.getRoom().getPlayers().stream()
+                .map(PlayerWrapper::unwrap)
+                .map(engine::getCarFromPlayer)
+                .map(CarPhysics::getCar)
+                .collect(Collectors.toList());
+
+        Connection connection = player.getConnection();
+        cars.stream()
+                .map(c -> new SpawnCarMessage(c.getPlayer().getPlayerId(), c.getX(), c.getY(), c.getDegree()))
+                .forEach(connection::send);
+    }
+
+    private void sendObstacles(PlayerWrapper player) {
+        List<ObstaclePhysics> cars = engine.getWorldObjects().stream()
+                .filter(o -> o instanceof ObstaclePhysics)
+                .map(o -> (ObstaclePhysics) o)
+                .collect(Collectors.toList());
+
+        Connection connection = player.getConnection();
+        cars.stream()
+                .map(ObstaclePhysics::getObstacle)
+                .map(o -> new SpawnObstacleMessage(o.getX(), o.getY(), o.getDegree(), o.getWidth(), o.getHeight(), o.getObstacleType()))
+                .forEach(connection::send);
     }
 
     private List<Message> getSynchronisationMessages() {
