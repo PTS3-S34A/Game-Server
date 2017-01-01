@@ -42,6 +42,8 @@ public final class GameServerSocnetController {
 
         registry.register(SpawnCarMessage.class);
         registry.register(SpawnObstacleMessage.class);
+        registry.register(SpawnBallMessage.class);
+
         registry.register(ChangePlayerStatusMessage.class);
         registry.register(PlayerSyncMessage.class);
         registry.register(BallSyncMessage.class);
