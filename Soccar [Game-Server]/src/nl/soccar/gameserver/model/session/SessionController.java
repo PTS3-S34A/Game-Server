@@ -52,7 +52,7 @@ public final class SessionController {
             sessions.put(roomName, wrapper);
         }
 
-        GameServer.getInstance().getRmiControler().sessionCreated(roomName, hostName, !password.isEmpty(), capacity);
+        GameServer.getInstance().getRmiController().sessionCreated(roomName, hostName, !password.isEmpty(), capacity);
         LOGGER.log(Level.INFO, "Session {0} created.", new String[]{roomName});
         return true;
     }
@@ -72,7 +72,7 @@ public final class SessionController {
             session.destroy();
         }
 
-        GameServer.getInstance().getRmiControler().sessionDestroyed(roomName);
+        GameServer.getInstance().getRmiController().sessionDestroyed(roomName);
         LOGGER.log(Level.INFO, "Session {0} destroyed.", new String[]{roomName});
     }
 

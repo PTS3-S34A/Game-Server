@@ -85,7 +85,7 @@ public final class RoomWrapper {
         String roomName = room.getName();
         LOGGER.log(Level.INFO, "Player {0} joined session {1}.", new String[]{player.getUsername(), roomName});
 
-        GameServerRmiController rmiController = GameServer.getInstance().getRmiControler();
+        GameServerRmiController rmiController = GameServer.getInstance().getRmiController();
         rmiController.increaseOccupancy(roomName);
         rmiController.changeHost(roomName, room.getHost().getUsername());
     }
@@ -124,7 +124,7 @@ public final class RoomWrapper {
             return;
         }
 
-        GameServerRmiController rmiController = GameServer.getInstance().getRmiControler();
+        GameServerRmiController rmiController = GameServer.getInstance().getRmiController();
         rmiController.decreaseOccupancy(roomName);
         rmiController.changeHost(roomName, room.getHost().getUsername());
     }

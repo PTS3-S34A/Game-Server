@@ -27,22 +27,48 @@ public final class GameServer {
     private GameServer() {
     }
 
+    /**
+     * Gets the Instance of the GameServer class.
+     * 
+     * @return GameServer The GameServer class.
+     */
     public static GameServer getInstance() {
         return INSTANCE;
     }
 
+    /**
+     * Registers the player.
+     * 
+     * @param player The given player, not null.
+     */
     public void registerPlayer(PlayerWrapper player) {
         registerPlayer(player.getConnection(), player);
     }
 
+    /**
+     * Registers the player
+     * 
+     * @param connection The given connection, not null.
+     * @param player The given player, not null.
+     */
     public void registerPlayer(Connection connection, PlayerWrapper player) {
         players.put(connection, player);
     }
 
+    /**
+     * Deregisters the player.
+     * 
+     * @param player The given player, not null.
+     */
     public void deregisterPlayer(PlayerWrapper player) {
         deregisterPlayer(player.getConnection());
     }
 
+    /**
+     * Deregisters the player.
+     * 
+     * @param connection The given Connection, not null.
+     */
     public void deregisterPlayer(Connection connection) {
         PlayerWrapper player = players.remove(connection);
         if (player == null) {
@@ -58,26 +84,57 @@ public final class GameServer {
         wrapper.getRoom().leave(player);
     }
 
+    /**
+     * Gets the Player from the given Connection.
+     * 
+     * @param connection The given Connection, not null.
+     * @return PlayerWrapper The player.
+     */
     public PlayerWrapper getPlayer(Connection connection) {
         return players.get(connection);
     }
 
+    /**
+     * Gets the SessionController.
+     * 
+     * @return SessionController The SessionController.
+     */
     public SessionController getSessionController() {
         return sessionController;
     }
 
-    public GameServerRmiController getRmiControler() {
+    /**
+     * Gets the RMI Controller.
+     * 
+     * @return GameServerRmiController The RMI Controller.
+     */
+    public GameServerRmiController getRmiController() {
         return rmiController;
     }
 
+    /**
+     * Sets the RMI Controller
+     * 
+     * @param rmiController The given RMI Controller.
+     */
     public void setRmiController(GameServerRmiController rmiController) {
         this.rmiController = rmiController;
     }
 
+    /**
+     * Gets the Socnet Controller.
+     * 
+     * @return GameServerSocnetController The socnet Controller.
+     */
     public GameServerSocnetController getSocnetController() {
         return socnetController;
     }
 
+    /**
+     * Sets the Socnet Controller.
+     * 
+     * @param socnetController The given Socnet Controller.
+     */
     public void setSocnetController(GameServerSocnetController socnetController) {
         this.socnetController = socnetController;
     }
