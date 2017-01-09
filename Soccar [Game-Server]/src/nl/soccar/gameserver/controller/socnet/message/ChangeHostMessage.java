@@ -13,24 +13,24 @@ import nl.soccar.socnet.message.MessageEvent;
 @MessageEvent(id = MessageConstants.CHANGE_HOST_MESSAGE_ID, handler = ChangeHostMessageHandler.class)
 public final class ChangeHostMessage extends Message {
 
-    private final String username;
+    private final int playerId;
 
     /**
      * Initializes this message.
      *
-     * @param username The username of the new host, not null.
+     * @param playerId The id of the new host.
      */
-    public ChangeHostMessage(String username) {
-        this.username = username;
+    public ChangeHostMessage(int playerId) {
+        this.playerId = playerId;
     }
 
     /**
      * The username of the new host.
      *
-     * @return The username of the new host, not null.
+     * @return The id of the new host.
      */
-    public String getUsername() {
-        return username;
+    public int getPlayerId() {
+        return playerId;
     }
 
     @Override

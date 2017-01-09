@@ -1,7 +1,6 @@
 package nl.soccar.gameserver.controller.socnet.message.handler;
 
 import io.netty.buffer.ByteBuf;
-import nl.soccar.gamecommuncation.util.ByteBufUtilities;
 import nl.soccar.gameserver.controller.socnet.message.ChangeHostMessage;
 import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
@@ -20,7 +19,7 @@ public final class ChangeHostMessageHandler extends MessageHandler<ChangeHostMes
 
     @Override
     protected void encode(Connection connection, ChangeHostMessage message, ByteBuf buf) throws Exception {
-        ByteBufUtilities.writeString(message.getUsername(), buf);
+        buf.writeByte(message.getPlayerId());
     }
 
     @Override
