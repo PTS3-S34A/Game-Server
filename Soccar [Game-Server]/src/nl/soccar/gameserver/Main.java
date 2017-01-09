@@ -25,6 +25,11 @@ public final class Main {
     private GameServerRmiController rmiController;
     private GameServerSocnetController socnetController;
 
+    /**
+     * Main method of the GameServer
+     * 
+     * @param args Arguments.
+     */
     public static void main(String[] args) {
         Main main = new Main();
 
