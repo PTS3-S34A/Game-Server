@@ -3,6 +3,7 @@ package nl.soccar.gameserver.model.command;
 import nl.soccar.gameserver.model.PlayerWrapper;
 import nl.soccar.gameserver.model.command.listener.BroadcastCommandListener;
 import nl.soccar.gameserver.model.command.listener.MuteCommandListener;
+import nl.soccar.gameserver.model.command.listener.SetHostCommandListener;
 import nl.soccar.gameserver.model.command.listener.UnmuteCommandListener;
 
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public final class CommandDispatcher {
         register("mute", new MuteCommandListener());
         register("unmute", new UnmuteCommandListener());
         register("broadcast", new BroadcastCommandListener());
+        register("sethost", new SetHostCommandListener());
     }
 
     private CommandDispatcher() {

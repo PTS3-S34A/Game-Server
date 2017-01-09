@@ -243,6 +243,27 @@ public final class RoomWrapper {
     }
 
     /**
+     * Changes the host from the Chat.
+     *
+     * @param issuer   The issuer of the change-host request, not null.
+     * @param username The username of the player that will be the new host.
+     */
+    public void changeHost(PlayerWrapper issuer, String username) {
+        synchronized (players) {
+            Optional<PlayerWrapper> optional = players.stream().filter(p -> p.getUsername().equalsIgnoreCase(username)).findFirst();
+            if (!optional.isPresent()) {
+                return;
+            }
+
+            PlayerWrapper other = optional.get();
+            setHost(other);
+
+            issuer.getConnection().send(new ChatMessage(-1, Privilege.ADMINISTRATOR, String.format("You have set %s as the new host.", username)));
+            other.getConnection().send(new ChatMessage(-1, Privilege.ADMINISTRATOR, "You are now the host of the room."));
+        }
+    }
+
+    /**
      * Joins the player to a random team.
      *
      * @param player The given player, not null.
@@ -370,4 +391,5 @@ public final class RoomWrapper {
     public Team getTeamRed() {
         return room.getTeamRed();
     }
+
 }
