@@ -20,13 +20,15 @@ public final class RegisterPlayerMessageHandler extends MessageHandler<RegisterP
 
     @Override
     protected void handle(Connection connection, RegisterPlayerMessage message) throws Exception {
+        GameServer gameServer = GameServer.getInstance();
+        
         String username = message.getUsername();
-        Privilege privilege = Privilege.GUEST;
+        Privilege privilege = gameServer.getRmiControler().getPrivilege(username);
 
         Player player = new Player(username, privilege, message.getCarType());
         PlayerWrapper wrapper = new PlayerWrapper(connection, player);
 
-        GameServer.getInstance().registerPlayer(connection, wrapper);
+        gameServer.registerPlayer(connection, wrapper);
     }
 
     @Override

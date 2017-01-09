@@ -75,6 +75,10 @@ public final class RoomWrapper {
 
             players.add(player);
 
+            if (players.size() == 1) {
+                room.setHost(unwrapped);
+            }
+
             unwrapped.setPlayerId(RoomUtilities.getNextPlayerId(this));
             unwrapped.setCurrentSession(session.unwrap());
         }
@@ -96,6 +100,8 @@ public final class RoomWrapper {
      * @param player The given player, not null.
      */
     public void leave(PlayerWrapper player) {
+        Player unwrapped = player.unwrap();
+
         synchronized (players) {
             PlayerLeftSessionMessage message = new PlayerLeftSessionMessage(player.getPlayerId());
 
@@ -103,9 +109,14 @@ public final class RoomWrapper {
             players.stream()
                     .map(PlayerWrapper::getConnection)
                     .forEach(c -> c.send(message));
+
+            if (players.isEmpty()) {
+                room.setHost(null);
+            } else if (room.getHost().equals(unwrapped) && players.size() > 0) {
+                room.setHost(players.get(0).unwrap());
+            }
         }
 
-        Player unwrapped = player.unwrap();
         unwrapped.setCurrentSession(null);
         unwrapped.setPlayerId(0);
 
