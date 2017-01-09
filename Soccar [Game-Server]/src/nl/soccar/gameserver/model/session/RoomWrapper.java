@@ -112,7 +112,7 @@ public final class RoomWrapper {
 
             if (players.isEmpty()) {
                 room.setHost(null);
-            } else if (room.getHost().equals(unwrapped) && players.size() > 0) {
+            } else if (room.getHost().equals(unwrapped) && !players.isEmpty()) {
                 room.setHost(players.get(0).unwrap());
             }
         }
