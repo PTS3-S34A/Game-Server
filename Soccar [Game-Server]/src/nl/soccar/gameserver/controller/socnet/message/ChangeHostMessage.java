@@ -6,7 +6,7 @@ import nl.soccar.socnet.message.MessageConstants;
 import nl.soccar.socnet.message.MessageEvent;
 
 /**
- * Message for the ball synchronization.
+ * Message for changing host.
  *
  * @author PTS34A
  */

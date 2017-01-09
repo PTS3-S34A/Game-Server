@@ -7,7 +7,7 @@ import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
 
 /**
- * Handler for the BallSyncMessage class.
+ * Handler for the ChangeHostMessage class.
  *
  * @author PTS34A
  */
