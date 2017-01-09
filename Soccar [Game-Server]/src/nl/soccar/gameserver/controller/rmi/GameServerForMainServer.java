@@ -19,16 +19,13 @@ import nl.soccar.rmi.RmiConstants;
  */
 public final class GameServerForMainServer extends UnicastRemoteObject implements IGameServerForMainServer {
 
-    private final GameServerRmiController controller;
-
     /**
      * Initializes the GameServerForMainServer class.
      *
-     * @param controller RmiController that is given, not null
      * @throws RemoteException
      */
-    public GameServerForMainServer(GameServerRmiController controller) throws RemoteException {
-        this.controller = controller;
+    public GameServerForMainServer() throws RemoteException {
+        // Doesnt need any parameters for intializing.
     }
 
     @Override
