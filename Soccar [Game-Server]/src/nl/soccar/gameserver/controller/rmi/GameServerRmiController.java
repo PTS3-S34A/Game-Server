@@ -66,7 +66,7 @@ public final class GameServerRmiController {
      * @throws IOException
      */
     public void register() throws IOException {
-        gameServerForMainServer = new GameServerForMainServer(this);
+        gameServerForMainServer = new GameServerForMainServer();
         mainServerForGameServer.register(gameServerForMainServer);
     }
 
