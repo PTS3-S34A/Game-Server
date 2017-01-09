@@ -25,6 +25,7 @@ public final class GameServerForMainServer extends UnicastRemoteObject implement
      * @throws RemoteException
      */
     public GameServerForMainServer() throws RemoteException {
+        // Doesnt need any parameters for intializing.
     }
 
     @Override
