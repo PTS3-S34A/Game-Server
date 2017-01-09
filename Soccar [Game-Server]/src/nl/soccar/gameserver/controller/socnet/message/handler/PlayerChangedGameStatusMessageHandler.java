@@ -6,6 +6,8 @@ import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
 
 /**
+ * Handler for the PlayerChangedGameStatusMessage class.
+ * 
  * @author PTS34A
  */
 public final class PlayerChangedGameStatusMessageHandler extends MessageHandler<PlayerChangedGameStatusMessage> {

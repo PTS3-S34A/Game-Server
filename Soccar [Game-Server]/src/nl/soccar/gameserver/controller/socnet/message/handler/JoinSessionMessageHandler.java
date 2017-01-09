@@ -13,6 +13,8 @@ import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
 
 /**
+ * Handler for the JoinSessionMessage class.
+ * 
  * @author PTS34A
  */
 public final class JoinSessionMessageHandler extends MessageHandler<JoinSessionMessage> {

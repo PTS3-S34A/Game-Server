@@ -12,6 +12,8 @@ import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
 
 /**
+ * Handler for the RegisterPlayerMessage class.
+ * 
  * @author PTS34A
  */
 public final class RegisterPlayerMessageHandler extends MessageHandler<RegisterPlayerMessage> {
