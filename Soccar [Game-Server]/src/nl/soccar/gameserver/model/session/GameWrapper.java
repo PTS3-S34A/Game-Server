@@ -37,6 +37,12 @@ public final class GameWrapper {
     private final GameEngine engine;
     private Timer timer;
 
+    /**
+     * Intializes the GameWrapper class.
+     * 
+     * @param session The session, not null.
+     * @param game The game, not null.
+     */
     public GameWrapper(SessionWrapper session, Game game) {
         this.session = session;
         this.game = game;
