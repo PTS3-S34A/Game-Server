@@ -232,7 +232,7 @@ public final class GameServerRmiController {
      * @return The privilege of the given user.
      */
     public Privilege getPrivilege(String username) {
-        Privilege privilege = Privilege.NORMAL;
+        Privilege privilege = Privilege.GUEST;
 
         try {
             privilege = mainServerForGameServer.getPrivilege(username);
