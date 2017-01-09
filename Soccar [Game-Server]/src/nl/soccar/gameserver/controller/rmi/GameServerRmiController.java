@@ -13,6 +13,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.soccar.library.enumeration.Privilege;
 
 /**
  * @author PTS34A
@@ -87,6 +88,60 @@ public final class GameServerRmiController {
         } catch (RemoteException e) {
             LOGGER.log(Level.WARNING, "An error occurred while reporting a changed host.", e);
         }
+    }
+
+    public void addGoals(String username, int goals) {
+        try {
+            mainServerForGameServer.addGoals(username, goals);
+        } catch (RemoteException e) {
+            LOGGER.log(Level.WARNING, "An error occurred while adding goals.", e);
+        }
+    }
+
+    public void addAssists(String username, int assists) {
+        try {
+            mainServerForGameServer.addAssists(username, assists);
+        } catch (RemoteException e) {
+            LOGGER.log(Level.WARNING, "An error occurred while adding assists.", e);
+        }
+    }
+
+    public void incrementGamesWon(String username) {
+        try {
+            mainServerForGameServer.incrementGamesWon(username);
+            incrementGamesPlayed(username);
+        } catch (RemoteException e) {
+            LOGGER.log(Level.WARNING, "An error occurred while incrementing games won.", e);
+        }
+    }
+
+    public void incrementGamesLost(String username) {
+        try {
+            mainServerForGameServer.incrementGamesLost(username);
+            incrementGamesPlayed(username);
+        } catch (RemoteException e) {
+            LOGGER.log(Level.WARNING, "An error occurred while incrementing games lost.", e);
+        }
+    }
+
+    public void incrementGamesPlayed(String username) {
+        try {
+            mainServerForGameServer.incrementGamesPlayed(username);
+        } catch (RemoteException e) {
+            LOGGER.log(Level.WARNING, "An error occurred while incrementing games played.", e);
+        }
+    }
+
+    public Privilege getPrivilege(String username) {
+        Privilege privilege = Privilege.NORMAL;
+
+        try {
+            privilege = mainServerForGameServer.getPrivilege(username);
+        } catch (RemoteException e) {
+            LOGGER.log(Level.WARNING, "An error occurred while retrieving the privilege of a user.", e);
+        }
+
+        return privilege;
     }
 
     public void close() {

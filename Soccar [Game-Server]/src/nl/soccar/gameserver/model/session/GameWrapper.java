@@ -17,10 +17,17 @@ import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.Message;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
+import nl.soccar.gameserver.controller.rmi.GameServerRmiController;
+import nl.soccar.gameserver.model.GameServer;
+import nl.soccar.library.Event;
+import nl.soccar.library.Player;
+import nl.soccar.library.enumeration.EventType;
+import nl.soccar.library.enumeration.Privilege;
 
 /**
  * @author PTS34A
@@ -73,6 +80,8 @@ public final class GameWrapper {
 
         engine.stop();
 
+        saveStatistics();
+
         playersReady.clear();
     }
 
@@ -112,6 +121,92 @@ public final class GameWrapper {
             playersReady.stream()
                     .map(PlayerWrapper::getConnection)
                     .forEach(c -> c.send(message));
+        }
+    }
+
+    private void saveStatistics() {
+        saveGoalsAssists();
+        saveGamesWonEvenLost();
+    }
+
+    private void saveGoalsAssists() {
+        java.util.Map<String, Integer> allGoals = new HashMap<>();
+        java.util.Map<String, Integer> allAssists = new HashMap<>();
+
+        game.getEvents().forEach(e -> {
+            String player = e.getPlayer().getUsername();
+            EventType type = e.getType();
+            if (type == EventType.GOAL_BLUE || type == EventType.GOAL_RED) {
+                int goals = allGoals.getOrDefault(player, 0);
+                allGoals.put(player, ++goals);
+            } else if (type == EventType.ASSIST) {
+                int assists = allAssists.getOrDefault(player, 0);
+                allAssists.put(player, ++assists);
+            }
+        });
+
+        GameServerRmiController controller = GameServer.getInstance().getRmiControler();
+        for (PlayerWrapper p : session.getRoom().getPlayers()) {
+            String username = p.getUsername();
+
+            Integer goals = allGoals.get(username);
+            if (goals != null && goals > 0) {
+                controller.addGoals(username, goals);
+            }
+
+            Integer assists = allAssists.get(username);
+            if (assists != null && assists > 0) {
+                controller.addAssists(username, assists);
+            }
+        }
+    }
+
+    private void saveGamesWonEvenLost() {
+        int goalsBlue = 0;
+        int goalsRed = 0;
+
+        for (Event e : game.getEvents()) {
+            EventType type = e.getType();
+            if (type == EventType.GOAL_BLUE) {
+                goalsBlue++;
+            } else if (type == EventType.GOAL_RED) {
+                goalsRed++;
+            }
+        }
+
+        RoomWrapper room = session.getRoom();
+        List<Player> teamBlue = room.getTeamBlue().getPlayers().stream()
+                .filter(p -> p.getPrivilege() != Privilege.GUEST)
+                .collect(Collectors.toList());
+        List<Player> teamRed = room.getTeamRed().getPlayers().stream()
+                .filter(p -> p.getPrivilege() != Privilege.GUEST)
+                .collect(Collectors.toList());
+
+        GameServerRmiController controller = GameServer.getInstance().getRmiControler();
+        if (goalsBlue > goalsRed) {
+            teamBlue.stream()
+                    .map(Player::getUsername)
+                    .forEach(controller::incrementGamesWon);
+
+            teamRed.stream()
+                    .map(Player::getUsername)
+                    .forEach(controller::incrementGamesLost);
+        } else if (goalsRed > goalsBlue) {
+            teamBlue.stream()
+                    .map(Player::getUsername)
+                    .forEach(controller::incrementGamesLost);
+
+            teamRed.stream()
+                    .map(Player::getUsername)
+                    .forEach(controller::incrementGamesWon);
+        } else {
+            teamBlue.stream()
+                    .map(Player::getUsername)
+                    .forEach(controller::incrementGamesPlayed);
+
+            teamRed.stream()
+                    .map(Player::getUsername)
+                    .forEach(controller::incrementGamesPlayed);
         }
     }
 
@@ -194,4 +289,5 @@ public final class GameWrapper {
     public Map getMap() {
         return game.getMap();
     }
+
 }
