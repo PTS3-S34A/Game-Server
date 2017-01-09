@@ -6,6 +6,8 @@ import nl.soccar.socnet.message.MessageConstants;
 import nl.soccar.socnet.message.MessageEvent;
 
 /**
+ * Message for leaving a Session.
+ * 
  * @author PTS34A
  */
 @MessageEvent(id = MessageConstants.LEAVE_SESSION_MESSAGE_ID, handler = LeaveSessionMessageHandler.class)

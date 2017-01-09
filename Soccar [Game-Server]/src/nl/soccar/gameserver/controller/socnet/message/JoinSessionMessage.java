@@ -7,6 +7,8 @@ import nl.soccar.socnet.message.MessageConstants;
 import nl.soccar.socnet.message.MessageEvent;
 
 /**
+ * Message for joining a Session.
+ *
  * @author PTS34A
  */
 @MessageEvent(id = MessageConstants.JOIN_SESSION_MESSAGE_ID, handler = JoinSessionMessageHandler.class)
@@ -18,6 +20,11 @@ public final class JoinSessionMessage extends Message {
     private final int capacity;
     private final GameSettings settings;
 
+    /**
+     * Initializes the JoinSessionMessage class.
+     *
+     * @param status The status of Joining a Session, not null.
+     */
     public JoinSessionMessage(Status status) {
         this.status = status;
         roomName = null;
