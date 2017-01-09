@@ -14,7 +14,7 @@ import nl.soccar.socnet.message.MessageHandler;
  * @author PTS34A
  */
 public final class ChangePlayerStatusMessageHandler extends MessageHandler<ChangePlayerStatusMessage> {
-
+    
     @Override
     protected void handle(Connection connection, ChangePlayerStatusMessage message) throws Exception {
         GameServer server = GameServer.getInstance();
@@ -29,9 +29,6 @@ public final class ChangePlayerStatusMessageHandler extends MessageHandler<Chang
         }
 
         ChangePlayerStatusMessage.Status status = message.getStatus();
-
-        System.out.println(status);
-
         if (status == ChangePlayerStatusMessage.Status.READY_TO_PLAY) {
             session.getGame().setPlayerReady(player);
         } else if (status == ChangePlayerStatusMessage.Status.REQUEST_WORLD_OBJECTS) {
