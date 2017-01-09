@@ -40,7 +40,7 @@ public final class RoomWrapper {
      * Intializes the RoomWrapper class.
      *
      * @param session The given session, not null.
-     * @param room The given Room, not null.
+     * @param room    The given Room, not null.
      */
     public RoomWrapper(SessionWrapper session, Room room) {
         this.session = session;
@@ -50,7 +50,7 @@ public final class RoomWrapper {
     /**
      * Joins the player to the room.
      *
-     * @param player The given player, not null.
+     * @param player   The given player, not null.
      * @param password The given password, not null.
      */
     public void join(PlayerWrapper player, String password) {
@@ -76,7 +76,7 @@ public final class RoomWrapper {
             players.add(player);
 
             if (players.size() == 1) {
-                room.setHost(unwrapped);
+                setHost(player);
             }
 
             unwrapped.setPlayerId(RoomUtilities.getNextPlayerId(this));
@@ -111,9 +111,9 @@ public final class RoomWrapper {
                     .forEach(c -> c.send(message));
 
             if (players.isEmpty()) {
-                room.setHost(null);
+                setHost(null);
             } else if (room.getHost().equals(unwrapped) && !players.isEmpty()) {
-                room.setHost(players.get(0).unwrap());
+                setHost(players.get(0));
             }
         }
 
@@ -166,7 +166,7 @@ public final class RoomWrapper {
     /**
      * Sends a Chat Message to the Room.
      *
-     * @param player The given player, not null.
+     * @param player  The given player, not null.
      * @param message The given chat message, not null.
      */
     public void sendChatMessage(PlayerWrapper player, String message) {
@@ -198,9 +198,9 @@ public final class RoomWrapper {
     /**
      * Mutes the player in the Chat.
      *
-     * @param issuer The issuer of the mute request, not null.
+     * @param issuer   The issuer of the mute request, not null.
      * @param username The username of the player that needs to be muted, not
-     * null.
+     *                 null.
      */
     public void mutePlayer(PlayerWrapper issuer, String username) {
         String lower = username.toLowerCase();
@@ -224,9 +224,9 @@ public final class RoomWrapper {
     /**
      * Unmutes the player in the Chat.
      *
-     * @param issuer The issuer of the mute request, not null.
+     * @param issuer   The issuer of the mute request, not null.
      * @param username The username of the player that needs to be muted, not
-     * null.
+     *                 null.
      */
     public void unmutePlayer(PlayerWrapper issuer, String username) {
         mutedNames.remove(username.toLowerCase());
@@ -239,6 +239,27 @@ public final class RoomWrapper {
             }
 
             optional.get().getConnection().send(new ChatMessage(-1, Privilege.ADMINISTRATOR, "You have been unmuted."));
+        }
+    }
+
+    /**
+     * Changes the host from the Chat.
+     *
+     * @param issuer   The issuer of the change-host request, not null.
+     * @param username The username of the player that will be the new host.
+     */
+    public void changeHost(PlayerWrapper issuer, String username) {
+        synchronized (players) {
+            Optional<PlayerWrapper> optional = players.stream().filter(p -> p.getUsername().equalsIgnoreCase(username)).findFirst();
+            if (!optional.isPresent()) {
+                return;
+            }
+
+            PlayerWrapper other = optional.get();
+            setHost(other);
+
+            issuer.getConnection().send(new ChatMessage(-1, Privilege.ADMINISTRATOR, String.format("You have set %s as the new host.", username)));
+            other.getConnection().send(new ChatMessage(-1, Privilege.ADMINISTRATOR, "You are now the host of the room."));
         }
     }
 
@@ -329,6 +350,20 @@ public final class RoomWrapper {
     }
 
     /**
+     * Sets the new host of this Room.
+     *
+     * @param player The player that is now host.
+     */
+    public void setHost(PlayerWrapper player) {
+        room.setHost(player == null ? null : player.unwrap());
+
+        ChangeHostMessage message = new ChangeHostMessage(player == null ? -1 : player.getPlayerId());
+        players.stream()
+                .map(PlayerWrapper::getConnection)
+                .forEach(c -> c.send(message));
+    }
+
+    /**
      * Gets all the players of the Room.
      *
      * @return List<Player> The list of players.
@@ -356,4 +391,5 @@ public final class RoomWrapper {
     public Team getTeamRed() {
         return room.getTeamRed();
     }
+
 }
