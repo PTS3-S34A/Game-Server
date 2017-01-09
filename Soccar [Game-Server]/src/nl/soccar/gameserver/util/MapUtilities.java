@@ -9,16 +9,23 @@ import nl.soccar.physics.models.ObstaclePhysics;
 import org.jbox2d.dynamics.World;
 
 /**
+ * Utilites for the Map.
+ *
  * @author PTS34A
  */
 public final class MapUtilities {
 
     private static final float WALL_WIDTH = 5;
-    private static final float CORNER_SIZE = 15;
 
     private MapUtilities() {
     }
 
+    /**
+     * Adds wall to the Map.
+     *
+     * @param engine The given game engine, not null.
+     * @param map The given map, not null.
+     */
     public static void addWalls(GameEngine engine, Map map) {
         Rectangle size = map.getSize();
         float mapWidth = (float) size.getWidth();
@@ -27,7 +34,6 @@ public final class MapUtilities {
         addWestWalls(engine, map, mapHeight);
         addEastWalls(engine, map, mapWidth, mapHeight);
         addNorthAndSouthWalls(engine, mapWidth, mapHeight);
-        //addCornerWalls(engine, mapWidth, mapHeight);
     }
 
     /**
@@ -66,7 +72,7 @@ public final class MapUtilities {
      * Method that adds the obstacle drawables to the map that represent the
      * easts walls.
      *
-     * @param mapWidth  The width of the map.
+     * @param mapWidth The width of the map.
      * @param mapHeight The height of the map.
      */
     private static void addEastWalls(GameEngine engine, Map map, float mapWidth, float mapHeight) {
@@ -99,7 +105,7 @@ public final class MapUtilities {
      * Method that adds the obstacle drawables to the map that represent the
      * north and south walls.
      *
-     * @param mapWidth  The width of the map.
+     * @param mapWidth The width of the map.
      * @param mapHeight The height of the map.
      */
     private static void addNorthAndSouthWalls(GameEngine engine, float mapWidth, float mapHeight) {
@@ -120,43 +126,8 @@ public final class MapUtilities {
     }
 
     /**
-     * Method that adds the obstacle drawables to the map that represent the
-     * nort and south walls.
-     *
-     * @param mapWidth  The width of the map.
-     * @param mapHeight The height of the map.
-     */
-    private static void addCornerWalls(GameEngine engine, float mapWidth, float mapHeight) {
-        World world = engine.getWorld();
-
-        ObstaclePhysics northWestWall = new ObstacleBuilder(world)
-                .x(0).y(mapHeight).degree(45)
-                .width(CORNER_SIZE).height(CORNER_SIZE)
-                .type(ObstacleType.WALL).build();
-
-        ObstaclePhysics northEastWall = new ObstacleBuilder(world)
-                .x(mapWidth).y(mapHeight).degree(45)
-                .width(CORNER_SIZE).height(CORNER_SIZE)
-                .type(ObstacleType.WALL).build();
-
-        ObstaclePhysics southWestWall = new ObstacleBuilder(world)
-                .x(0).y(0).degree(45)
-                .width(CORNER_SIZE).height(CORNER_SIZE)
-                .type(ObstacleType.WALL).build();
-
-        ObstaclePhysics southEastWall = new ObstacleBuilder(world)
-                .x(mapWidth).y(0).degree(45)
-                .width(CORNER_SIZE).height(CORNER_SIZE)
-                .type(ObstacleType.WALL).build();
-
-        engine.addWorldObject(northWestWall);
-        engine.addWorldObject(northEastWall);
-        engine.addWorldObject(southWestWall);
-        engine.addWorldObject(southEastWall);
-    }
-
-    /**
-     * An ObstacleBuilder builds an obstacle for usage with the UI. It combines a model, physics-model and ui object and builds them implicitely.
+     * An ObstacleBuilder builds an obstacle for usage with the UI. It combines
+     * a model, physics-model and ui object and builds them implicitely.
      */
     public static class ObstacleBuilder {
 
@@ -181,7 +152,8 @@ public final class MapUtilities {
         /**
          * Sets the x-position of this Obstacle.
          *
-         * @param x The new x-position that will be used when building this obstacle.
+         * @param x The new x-position that will be used when building this
+         * obstacle.
          * @return This ObstacleBuilder, for method chaining.
          */
         public ObstacleBuilder x(float x) {
@@ -192,7 +164,8 @@ public final class MapUtilities {
         /**
          * Sets the y-position of this Obstacle.
          *
-         * @param y The new y-position that will be used when building this obstacle.
+         * @param y The new y-position that will be used when building this
+         * obstacle.
          * @return This ObstacleBuilder, for method chaining.
          */
         public ObstacleBuilder y(float y) {
@@ -203,7 +176,8 @@ public final class MapUtilities {
         /**
          * Sets the angle of this Obstacle.
          *
-         * @param degree The new angle that will be used when building this obstacle.
+         * @param degree The new angle that will be used when building this
+         * obstacle.
          * @return This ObstacleBuilder, for method chaining.
          */
         public ObstacleBuilder degree(float degree) {
@@ -214,7 +188,8 @@ public final class MapUtilities {
         /**
          * Sets the width of this Obstacle.
          *
-         * @param width The new width that will be used when building this obstacle.
+         * @param width The new width that will be used when building this
+         * obstacle.
          * @return This ObstacleBuilder, for method chaining.
          */
         public ObstacleBuilder width(float width) {
@@ -225,7 +200,8 @@ public final class MapUtilities {
         /**
          * Sets the height of this Obstacle.
          *
-         * @param height The new height that will be used when building this obstacle.
+         * @param height The new height that will be used when building this
+         * obstacle.
          * @return This ObstacleBuilder, for method chaining.
          */
         public ObstacleBuilder height(float height) {
@@ -236,7 +212,8 @@ public final class MapUtilities {
         /**
          * Sets the type of this Obstacle.
          *
-         * @param type The new type that will be used when building this obstacle.
+         * @param type The new type that will be used when building this
+         * obstacle.
          * @return This ObstacleBuilder, for method chaining.
          */
         public ObstacleBuilder type(ObstacleType type) {
@@ -245,7 +222,8 @@ public final class MapUtilities {
         }
 
         /**
-         * Builds an Obstacle-UI object, it combines a model and a physics-model to do so.
+         * Builds an Obstacle-UI object, it combines a model and a physics-model
+         * to do so.
          *
          * @return The created ObstacleUiFx object.
          */

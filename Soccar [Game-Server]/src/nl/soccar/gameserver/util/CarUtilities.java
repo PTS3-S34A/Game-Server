@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Utilities for the Car.
+ *
  * @author PTS34A
  */
 public final class CarUtilities {
@@ -19,6 +21,13 @@ public final class CarUtilities {
     private CarUtilities() {
     }
 
+    /**
+     * Adds the Cars to the Game.
+     *
+     * @param game The given game, not null.
+     * @param blue The given team blue, not null.
+     * @param red The given team red, not null.
+     */
     public static void addCars(GameWrapper game, Team blue, Team red) {
         addCars(game, blue);
         addCars(game, red);
