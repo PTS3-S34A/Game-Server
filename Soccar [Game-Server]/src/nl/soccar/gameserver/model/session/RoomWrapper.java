@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Wrapper for the Room.
+ *
  * @author PTS34A
  */
 public final class RoomWrapper {
@@ -34,11 +36,23 @@ public final class RoomWrapper {
     private final SessionWrapper session;
     private final Room room;
 
+    /**
+     * Intializes the RoomWrapper class.
+     *
+     * @param session The given session, not null.
+     * @param room The given Room, not null.
+     */
     public RoomWrapper(SessionWrapper session, Room room) {
         this.session = session;
         this.room = room;
     }
 
+    /**
+     * Joins the player to the room.
+     *
+     * @param player The given player, not null.
+     * @param password The given password, not null.
+     */
     public void join(PlayerWrapper player, String password) {
         if (room.getOccupancy() + 1 > room.getCapacity()) {
             player.getConnection().send(new JoinSessionMessage(JoinSessionMessage.Status.CAPACITY_OVERFLOW));
@@ -76,6 +90,11 @@ public final class RoomWrapper {
         rmiController.changeHost(roomName, room.getHost().getUsername());
     }
 
+    /**
+     * Leaves the player of the Room.
+     *
+     * @param player The given player, not null.
+     */
     public void leave(PlayerWrapper player) {
         synchronized (players) {
             PlayerLeftSessionMessage message = new PlayerLeftSessionMessage(player.getPlayerId());
@@ -110,6 +129,11 @@ public final class RoomWrapper {
         rmiController.changeHost(roomName, room.getHost().getUsername());
     }
 
+    /**
+     * Switches the player to the other team.
+     *
+     * @param player The given player, not null.
+     */
     public void switchTeam(PlayerWrapper player) {
         synchronized (teams) {
             Team oldTeam = teams.remove(player);
@@ -128,6 +152,12 @@ public final class RoomWrapper {
         }
     }
 
+    /**
+     * Sends a Chat Message to the Room.
+     *
+     * @param player The given player, not null.
+     * @param message The given chat message, not null.
+     */
     public void sendChatMessage(PlayerWrapper player, String message) {
         if (message.startsWith("/")) {
             String[] components = message.substring(1).split(" ");
@@ -154,6 +184,13 @@ public final class RoomWrapper {
         }
     }
 
+    /**
+     * Mutes the player in the Chat.
+     *
+     * @param issuer The issuer of the mute request, not null.
+     * @param username The username of the player that needs to be muted, not
+     * null.
+     */
     public void mutePlayer(PlayerWrapper issuer, String username) {
         String lower = username.toLowerCase();
         if (mutedNames.contains(lower)) {
@@ -173,6 +210,13 @@ public final class RoomWrapper {
         }
     }
 
+    /**
+     * Unmutes the player in the Chat.
+     *
+     * @param issuer The issuer of the mute request, not null.
+     * @param username The username of the player that needs to be muted, not
+     * null.
+     */
     public void unmutePlayer(PlayerWrapper issuer, String username) {
         mutedNames.remove(username.toLowerCase());
         issuer.getConnection().send(new ChatMessage(-1, Privilege.ADMINISTRATOR, String.format("You have unmuted %s.", username)));
@@ -187,6 +231,11 @@ public final class RoomWrapper {
         }
     }
 
+    /**
+     * Joins the player to a random team.
+     *
+     * @param player The given player, not null.
+     */
     private void joinRandomTeam(PlayerWrapper player) {
         Team blue = room.getTeamBlue();
         int blueSize = blue.getSize();
@@ -204,6 +253,11 @@ public final class RoomWrapper {
         }
     }
 
+    /**
+     * Sends the room information to the given player.
+     *
+     * @param player The given player, not null.
+     */
     private void sendRoomInformation(PlayerWrapper player) {
         Connection connection = player.getConnection();
 
@@ -229,14 +283,29 @@ public final class RoomWrapper {
         }
     }
 
+    /**
+     * Gets the occupation of the Room.
+     *
+     * @return int The occupation of the Room.
+     */
     public int getOccupation() {
         return room.getOccupancy();
     }
 
+    /**
+     * Gets the capacity of the Room.
+     *
+     * @return int The capacity of the Room.
+     */
     public int getCapacity() {
         return room.getCapacity();
     }
 
+    /**
+     * Gets the host of the Room.
+     *
+     * @return PlayerWrapper The player.
+     */
     public PlayerWrapper getHost() {
         synchronized (players) {
             Optional<PlayerWrapper> optional = players.stream().filter(p -> p.getUsername().equals(room.getHost().getUsername())).findFirst();
@@ -248,16 +317,31 @@ public final class RoomWrapper {
         }
     }
 
+    /**
+     * Gets all the players of the Room.
+     *
+     * @return List<Player> The list of players.
+     */
     public List<PlayerWrapper> getPlayers() {
         synchronized (players) {
             return Collections.unmodifiableList(players);
         }
     }
 
+    /**
+     * Gets the Team Blue of the Room.
+     *
+     * @return Team The team blue of the Room.
+     */
     public Team getTeamBlue() {
         return room.getTeamBlue();
     }
 
+    /**
+     * Gets the Team Red of the Room.
+     *
+     * @return Team The team red of the Room.
+     */
     public Team getTeamRed() {
         return room.getTeamRed();
     }

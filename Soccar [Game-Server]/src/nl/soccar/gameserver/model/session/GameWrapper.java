@@ -23,6 +23,8 @@ import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 /**
+ * Wrapper for the Game class.
+ *
  * @author PTS34A
  */
 public final class GameWrapper {
@@ -42,6 +44,9 @@ public final class GameWrapper {
         engine = new GameEngine(game);
     }
 
+    /**
+     * Starts the game.
+     */
     public void requestStart() {
         initializeWorldObjects();
         sendGameInformation();
@@ -68,6 +73,9 @@ public final class GameWrapper {
         }, 0, 75);
     }
 
+    /**
+     * Stops the game.
+     */
     public void stop() {
         timer.cancel();
 
@@ -76,6 +84,11 @@ public final class GameWrapper {
         playersReady.clear();
     }
 
+    /**
+     * Sends the WorldObjects to the player.
+     *
+     * @param player The given player, not null.
+     */
     public void sendWorldObjects(PlayerWrapper player) {
         sendCars(player);
         sendObstacles(player);
@@ -84,6 +97,15 @@ public final class GameWrapper {
         player.getConnection().send(new ChangePlayerStatusMessage(ChangePlayerStatusMessage.Status.READY_TO_PLAY));
     }
 
+    /**
+     * Moves the position of the given player and sends this to all the other
+     * players.
+     *
+     * @param player The given player, not null.
+     * @param steerAction The steer action of the player, not null.
+     * @param handbrakeAction The handbrake action of the player, not null.
+     * @param throttleAction The throttole action of the player, not null.
+     */
     public void movePlayer(PlayerWrapper player, SteerAction steerAction, HandbrakeAction handbrakeAction, ThrottleAction throttleAction) {
         Map map = game.getMap();
 
@@ -102,6 +124,12 @@ public final class GameWrapper {
                 .forEach(c -> c.send(message));
     }
 
+    /**
+     * Sets the state of the player to ready and sends this to the other
+     * players.
+     *
+     * @param player The given player, not null.
+     */
     public void setPlayerReady(PlayerWrapper player) {
         playersReady.add(player);
 
@@ -183,14 +211,29 @@ public final class GameWrapper {
         return messages;
     }
 
+    /**
+     * Gets the Game Engine.
+     *
+     * @return GameEngine The game engine.
+     */
     public GameEngine getGameEngine() {
         return engine;
     }
 
+    /**
+     * Gets the game settings.
+     *
+     * @return GameSettings The game settings.
+     */
     public GameSettings getGameSettings() {
         return game.getGameSettings();
     }
 
+    /**
+     * Gets the Map.
+     *
+     * @return Map The map.
+     */
     public Map getMap() {
         return game.getMap();
     }
