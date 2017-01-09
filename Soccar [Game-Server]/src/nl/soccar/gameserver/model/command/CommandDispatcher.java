@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Dispatcher for the Commands in the Chat.
+ * 
  * @author PTS34A
  */
 public final class CommandDispatcher {
@@ -24,6 +26,12 @@ public final class CommandDispatcher {
     private CommandDispatcher() {
     }
 
+    /**
+     * Dispatchs the Command and executes it.
+     * 
+     * @param player The given player. not null.
+     * @param command The given Command, not null.
+     */
     public static void dispatch(PlayerWrapper player, Command command) {
         CommandListener listener = listeners.get(command.getName().toLowerCase());
         if (listener != null) {
@@ -31,10 +39,21 @@ public final class CommandDispatcher {
         }
     }
 
+    /**
+     * Registers the command to the given listener.
+     * 
+     * @param command The given command, not null.
+     * @param listener The given Listener, not null.
+     */
     public static void register(String command, CommandListener listener) {
         listeners.put(command.toLowerCase(), listener);
     }
 
+    /**
+     * Deregisters the command.
+     * 
+     * @param command The given command, not null.
+     */
     public static void deregister(String command) {
         listeners.remove(command);
     }

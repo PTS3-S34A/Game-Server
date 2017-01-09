@@ -13,6 +13,8 @@ import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
 
 /**
+ * Handler for the PlayerMovedMessage class.
+ * 
  * @author PTS34A
  */
 public final class PlayerMovedMessageHandler extends MessageHandler<PlayerMovedMessage> {

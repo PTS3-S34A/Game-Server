@@ -1,14 +1,14 @@
 package nl.soccar.gameserver.model.session;
 
+import nl.soccar.gameserver.controller.rmi.GameServerRmiController;
 import nl.soccar.gameserver.controller.socnet.message.*;
+import nl.soccar.gameserver.model.GameServer;
 import nl.soccar.gameserver.model.PlayerWrapper;
 import nl.soccar.gameserver.util.CarUtilities;
 import nl.soccar.gameserver.util.MapUtilities;
 import nl.soccar.library.*;
-import nl.soccar.library.enumeration.GameStatus;
-import nl.soccar.library.enumeration.HandbrakeAction;
-import nl.soccar.library.enumeration.SteerAction;
-import nl.soccar.library.enumeration.ThrottleAction;
+import nl.soccar.library.Map;
+import nl.soccar.library.enumeration.*;
 import nl.soccar.physics.GameEngine;
 import nl.soccar.physics.models.BallPhysics;
 import nl.soccar.physics.models.CarPhysics;
@@ -16,20 +16,12 @@ import nl.soccar.physics.models.ObstaclePhysics;
 import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.Message;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.stream.Collectors;
-import nl.soccar.gameserver.controller.rmi.GameServerRmiController;
-import nl.soccar.gameserver.model.GameServer;
-import nl.soccar.library.Event;
-import nl.soccar.library.Player;
-import nl.soccar.library.enumeration.EventType;
-import nl.soccar.library.enumeration.Privilege;
 
 /**
+ * Wrapper for the Game class.
+ *
  * @author PTS34A
  */
 public final class GameWrapper {
@@ -42,6 +34,12 @@ public final class GameWrapper {
     private final GameEngine engine;
     private Timer timer;
 
+    /**
+     * Intializes the GameWrapper class.
+     * 
+     * @param session The session, not null.
+     * @param game The game, not null.
+     */
     public GameWrapper(SessionWrapper session, Game game) {
         this.session = session;
         this.game = game;
@@ -49,6 +47,9 @@ public final class GameWrapper {
         engine = new GameEngine(game);
     }
 
+    /**
+     * Starts the game.
+     */
     public void requestStart() {
         initializeWorldObjects();
         sendGameInformation();
@@ -75,6 +76,9 @@ public final class GameWrapper {
         }, 0, 75);
     }
 
+    /**
+     * Stops the game.
+     */
     public void stop() {
         timer.cancel();
 
@@ -85,6 +89,11 @@ public final class GameWrapper {
         playersReady.clear();
     }
 
+    /**
+     * Sends the WorldObjects to the player.
+     *
+     * @param player The given player, not null.
+     */
     public void sendWorldObjects(PlayerWrapper player) {
         sendCars(player);
         sendObstacles(player);
@@ -93,6 +102,15 @@ public final class GameWrapper {
         player.getConnection().send(new ChangePlayerStatusMessage(ChangePlayerStatusMessage.Status.READY_TO_PLAY));
     }
 
+    /**
+     * Moves the position of the given player and sends this to all the other
+     * players.
+     *
+     * @param player The given player, not null.
+     * @param steerAction The steer action of the player, not null.
+     * @param handbrakeAction The handbrake action of the player, not null.
+     * @param throttleAction The throttole action of the player, not null.
+     */
     public void movePlayer(PlayerWrapper player, SteerAction steerAction, HandbrakeAction handbrakeAction, ThrottleAction throttleAction) {
         Map map = game.getMap();
 
@@ -111,6 +129,12 @@ public final class GameWrapper {
                 .forEach(c -> c.send(message));
     }
 
+    /**
+     * Sets the state of the player to ready and sends this to the other
+     * players.
+     *
+     * @param player The given player, not null.
+     */
     public void setPlayerReady(PlayerWrapper player) {
         playersReady.add(player);
 
@@ -145,7 +169,7 @@ public final class GameWrapper {
             }
         });
 
-        GameServerRmiController controller = GameServer.getInstance().getRmiControler();
+        GameServerRmiController controller = GameServer.getInstance().getRmiController();
         for (PlayerWrapper p : session.getRoom().getPlayers()) {
             String username = p.getUsername();
 
@@ -182,7 +206,7 @@ public final class GameWrapper {
                 .filter(p -> p.getPrivilege() != Privilege.GUEST)
                 .collect(Collectors.toList());
 
-        GameServerRmiController controller = GameServer.getInstance().getRmiControler();
+        GameServerRmiController controller = GameServer.getInstance().getRmiController();
         if (goalsBlue > goalsRed) {
             teamBlue.stream()
                     .map(Player::getUsername)
@@ -278,14 +302,29 @@ public final class GameWrapper {
         return messages;
     }
 
+    /**
+     * Gets the Game Engine.
+     *
+     * @return GameEngine The game engine.
+     */
     public GameEngine getGameEngine() {
         return engine;
     }
 
+    /**
+     * Gets the game settings.
+     *
+     * @return GameSettings The game settings.
+     */
     public GameSettings getGameSettings() {
         return game.getGameSettings();
     }
 
+    /**
+     * Gets the Map.
+     *
+     * @return Map The map.
+     */
     public Map getMap() {
         return game.getMap();
     }

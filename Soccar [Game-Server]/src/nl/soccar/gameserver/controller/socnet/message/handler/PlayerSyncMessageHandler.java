@@ -6,6 +6,8 @@ import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
 
 /**
+ * Handler fot the PlayerSyncMessage class.
+ * 
  * @author PTS34A
  */
 public final class PlayerSyncMessageHandler extends MessageHandler<PlayerSyncMessage> {

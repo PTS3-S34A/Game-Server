@@ -8,10 +8,15 @@ import nl.soccar.gameserver.model.session.RoomWrapper;
 import nl.soccar.library.enumeration.Privilege;
 
 /**
- * @author Lesley
+ * Listener for broadcasting commands.
+ * 
+ * @author PTS34A
  */
 public final class BroadcastCommandListener extends CommandListener {
 
+    /**
+     * Intializes the BroadcastCommandListener class.
+     */
     public BroadcastCommandListener() {
         super(Privilege.ADMINISTRATOR, false);
     }

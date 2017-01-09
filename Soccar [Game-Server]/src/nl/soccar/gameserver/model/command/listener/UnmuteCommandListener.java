@@ -7,10 +7,15 @@ import nl.soccar.gameserver.model.session.RoomWrapper;
 import nl.soccar.library.enumeration.Privilege;
 
 /**
+ * Listener for the Unmute command listener.
+ * 
  * @author Lesley
  */
 public final class UnmuteCommandListener extends CommandListener {
 
+    /**
+     * Intializes the UnmuteCommandListener class.
+     */
     public UnmuteCommandListener() {
         super(Privilege.GUEST, true);
     }

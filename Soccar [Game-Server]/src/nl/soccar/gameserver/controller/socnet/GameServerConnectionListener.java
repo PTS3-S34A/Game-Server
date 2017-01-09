@@ -5,6 +5,8 @@ import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.connection.ConnectionListener;
 
 /**
+ * Connection listener for the GameServer.
+ * 
  * @author PTS34A
  */
 public final class GameServerConnectionListener implements ConnectionListener {

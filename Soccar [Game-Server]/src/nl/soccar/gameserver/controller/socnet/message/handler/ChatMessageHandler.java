@@ -10,6 +10,8 @@ import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
 
 /**
+ * Handler dor the ChatMessage class.
+ * 
  * @author PTS34A
  */
 public final class ChatMessageHandler extends MessageHandler<ChatMessage> {

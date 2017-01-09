@@ -7,6 +7,8 @@ import nl.soccar.socnet.message.MessageRegistry;
 import java.io.IOException;
 
 /**
+ * Controller for the socket connections from the GameServer.
+ *
  * @author PTS34A
  */
 public final class GameServerSocnetController {
@@ -14,10 +16,18 @@ public final class GameServerSocnetController {
     private final int port;
     private Server server;
 
+    /**
+     * Initializes the gamServerSocnetController class.
+     *
+     * @param port The port for the GameServer socket connection, not null.
+     */
     public GameServerSocnetController(int port) {
         this.port = port;
     }
 
+    /**
+     * Initializes the server Node on the GameServer.
+     */
     public void initialize() {
         server = new Server();
         server.addListener(new GameServerConnectionListener());
@@ -49,10 +59,18 @@ public final class GameServerSocnetController {
         registry.register(BallSyncMessage.class);
     }
 
+    /**
+     * Binds the port to the Server Node.
+     * 
+     * @throws IOException 
+     */
     public void bind() throws IOException {
         server.bind(port);
     }
 
+    /**
+     * Closes the Server Node.
+     */
     public void close() {
         if (server != null) {
             server.close();

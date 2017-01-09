@@ -13,6 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Starting point of Soccar GameServer application.
+ *
  * @author PTS34A
  */
 public final class Main {
@@ -23,6 +25,11 @@ public final class Main {
     private GameServerRmiController rmiController;
     private GameServerSocnetController socnetController;
 
+    /**
+     * Main method of the GameServer
+     * 
+     * @param args Arguments.
+     */
     public static void main(String[] args) {
         Main main = new Main();
 
