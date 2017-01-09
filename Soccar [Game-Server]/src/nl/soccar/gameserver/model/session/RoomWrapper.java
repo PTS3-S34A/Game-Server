@@ -75,16 +75,18 @@ public final class RoomWrapper {
 
             players.add(player);
 
-            if (players.size() == 1) {
-                setHost(player);
-            }
-
             unwrapped.setPlayerId(RoomUtilities.getNextPlayerId(this));
             unwrapped.setCurrentSession(session.unwrap());
         }
 
         joinRandomTeam(player);
         sendRoomInformation(player);
+
+        synchronized (players) {
+            if (players.size() == 1) {
+                setHost(player);
+            }
+        }
 
         String roomName = room.getName();
         LOGGER.log(Level.INFO, "Player {0} joined session {1}.", new String[]{player.getUsername(), roomName});
