@@ -23,7 +23,7 @@ public final class RegisterPlayerMessageHandler extends MessageHandler<RegisterP
         GameServer gameServer = GameServer.getInstance();
         
         String username = message.getUsername();
-        Privilege privilege = gameServer.getRmiControler().getPrivilege(username);
+        Privilege privilege = gameServer.getRmiController().getPrivilege(username);
 
         Player player = new Player(username, privilege, message.getCarType());
         PlayerWrapper wrapper = new PlayerWrapper(connection, player);

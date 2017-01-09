@@ -1,6 +1,7 @@
 package nl.soccar.gameserver.controller.rmi;
 
 import nl.soccar.library.SessionData;
+import nl.soccar.library.enumeration.Privilege;
 import nl.soccar.rmi.RmiConstants;
 import nl.soccar.rmi.interfaces.IMainServerForGameServer;
 
@@ -13,7 +14,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.soccar.library.enumeration.Privilege;
 
 /**
  * Controller class that is responsible for handling RMI network communication
@@ -144,6 +144,14 @@ public final class GameServerRmiController {
         }
     }
 
+    /**
+     * Adds a given amount of goals to the given player stored in the
+     * persistency service.
+     *
+     * @param username The username of the player whose amount of goals needs to
+     *                 be increased.
+     * @param goals    The amount of goals that need to be added to the player.
+     */
     public void addGoals(String username, int goals) {
         try {
             mainServerForGameServer.addGoals(username, goals);
@@ -152,6 +160,14 @@ public final class GameServerRmiController {
         }
     }
 
+    /**
+     * Adds a given amount of assists to the given player stored in the
+     * persistency service.
+     *
+     * @param username The username of the player whose amount of assists needs
+     * to be increased.
+     * @param assists The amount of assists that need to be added to the player.
+     */
     public void addAssists(String username, int assists) {
         try {
             mainServerForGameServer.addAssists(username, assists);
@@ -160,6 +176,13 @@ public final class GameServerRmiController {
         }
     }
 
+    /**
+     * Increments the amount of games won by a player stored in the persistency
+     * service.
+     *
+     * @param username The username of the player whose amount of won games
+     * needs to be incremented.
+     */
     public void incrementGamesWon(String username) {
         try {
             mainServerForGameServer.incrementGamesWon(username);
@@ -169,6 +192,13 @@ public final class GameServerRmiController {
         }
     }
 
+    /**
+     * Increments the amount of games lost by a player stored in the persistency
+     * service.
+     *
+     * @param username The username of the player whose amount of lost games
+     * needs to be incremented.
+     */
     public void incrementGamesLost(String username) {
         try {
             mainServerForGameServer.incrementGamesLost(username);
@@ -178,6 +208,13 @@ public final class GameServerRmiController {
         }
     }
 
+    /**
+     * Increments the amount of games played by a player stored in the
+     * persistency service.
+     *
+     * @param username The username of the player whose amount of played games
+     * needs to be incremented.
+     */
     public void incrementGamesPlayed(String username) {
         try {
             mainServerForGameServer.incrementGamesPlayed(username);
@@ -186,6 +223,14 @@ public final class GameServerRmiController {
         }
     }
 
+    /**
+     * Retrieves the privilege of the user with the given username from the
+     * persistency service.
+     *
+     * @param username The username of the user whose privilege is being
+     * retrieved.
+     * @return The privilege of the given user.
+     */
     public Privilege getPrivilege(String username) {
         Privilege privilege = Privilege.NORMAL;
 

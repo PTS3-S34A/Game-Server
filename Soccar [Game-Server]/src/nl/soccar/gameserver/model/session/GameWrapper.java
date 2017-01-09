@@ -1,14 +1,14 @@
 package nl.soccar.gameserver.model.session;
 
+import nl.soccar.gameserver.controller.rmi.GameServerRmiController;
 import nl.soccar.gameserver.controller.socnet.message.*;
+import nl.soccar.gameserver.model.GameServer;
 import nl.soccar.gameserver.model.PlayerWrapper;
 import nl.soccar.gameserver.util.CarUtilities;
 import nl.soccar.gameserver.util.MapUtilities;
 import nl.soccar.library.*;
-import nl.soccar.library.enumeration.GameStatus;
-import nl.soccar.library.enumeration.HandbrakeAction;
-import nl.soccar.library.enumeration.SteerAction;
-import nl.soccar.library.enumeration.ThrottleAction;
+import nl.soccar.library.Map;
+import nl.soccar.library.enumeration.*;
 import nl.soccar.physics.GameEngine;
 import nl.soccar.physics.models.BallPhysics;
 import nl.soccar.physics.models.CarPhysics;
@@ -16,18 +16,8 @@ import nl.soccar.physics.models.ObstaclePhysics;
 import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.Message;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.stream.Collectors;
-import nl.soccar.gameserver.controller.rmi.GameServerRmiController;
-import nl.soccar.gameserver.model.GameServer;
-import nl.soccar.library.Event;
-import nl.soccar.library.Player;
-import nl.soccar.library.enumeration.EventType;
-import nl.soccar.library.enumeration.Privilege;
 
 /**
  * Wrapper for the Game class.
@@ -179,7 +169,7 @@ public final class GameWrapper {
             }
         });
 
-        GameServerRmiController controller = GameServer.getInstance().getRmiControler();
+        GameServerRmiController controller = GameServer.getInstance().getRmiController();
         for (PlayerWrapper p : session.getRoom().getPlayers()) {
             String username = p.getUsername();
 
@@ -216,7 +206,7 @@ public final class GameWrapper {
                 .filter(p -> p.getPrivilege() != Privilege.GUEST)
                 .collect(Collectors.toList());
 
-        GameServerRmiController controller = GameServer.getInstance().getRmiControler();
+        GameServerRmiController controller = GameServer.getInstance().getRmiController();
         if (goalsBlue > goalsRed) {
             teamBlue.stream()
                     .map(Player::getUsername)
