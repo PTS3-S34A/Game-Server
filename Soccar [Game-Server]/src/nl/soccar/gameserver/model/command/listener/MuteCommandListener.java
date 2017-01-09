@@ -7,10 +7,15 @@ import nl.soccar.gameserver.model.session.RoomWrapper;
 import nl.soccar.library.enumeration.Privilege;
 
 /**
+ * Listener for mute commands.
+ * 
  * @author Lesley
  */
 public final class MuteCommandListener extends CommandListener {
 
+    /**
+     * Intializes the MuteCommandListener class.
+     */
     public MuteCommandListener() {
         super(Privilege.GUEST, true);
     }
