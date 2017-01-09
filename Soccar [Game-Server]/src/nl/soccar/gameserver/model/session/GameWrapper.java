@@ -20,10 +20,15 @@ import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.Message;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
+import nl.soccar.gameserver.controller.rmi.GameServerRmiController;
+import nl.soccar.gameserver.model.GameServer;
+import nl.soccar.library.Event;
+import nl.soccar.library.enumeration.EventType;
 
 /**
  * @author PTS34A
@@ -76,7 +81,50 @@ public final class GameWrapper {
 
         engine.stop();
 
+        saveStatistics();
+
         playersReady.clear();
+    }
+
+    private void saveStatistics() {
+        saveGoalsAssists();
+        saveGameWonEvenLost();
+    }
+
+    private void saveGoalsAssists() {
+        java.util.Map<String, Integer> allGoals = new HashMap<>();
+        java.util.Map<String, Integer> allAssists = new HashMap<>();
+
+        game.getEvents().forEach(e -> {
+            String player = e.getPlayer().getUsername();
+            EventType type = e.getType();
+            if (type == EventType.GOAL_BLUE || type == EventType.GOAL_RED) {
+                int goals = allGoals.getOrDefault(player, 0);
+                allGoals.put(player, ++goals);
+            } else if (type == EventType.ASSIST) {
+                int assists = allAssists.getOrDefault(player, 0);
+                allAssists.put(player, ++assists);
+            }
+        });
+
+        GameServerRmiController controller = GameServer.getInstance().getRmiControler();
+        for (PlayerWrapper p : session.getRoom().getPlayers()) {
+            String username = p.getUsername();
+
+            Integer goals = allGoals.get(username);
+            if (goals != null && goals > 0) {
+                controller.addGoals(username, goals);
+            }
+
+            Integer assists = allAssists.get(username);
+            if (assists != null && assists > 0) {
+                controller.addAssists(username, assists);
+            }
+        }
+    }
+
+    private void saveGameWonEvenLost() {
+        
     }
 
     public void sendWorldObjects(PlayerWrapper player) {
@@ -190,4 +238,5 @@ public final class GameWrapper {
     public Map getMap() {
         return game.getMap();
     }
+
 }
