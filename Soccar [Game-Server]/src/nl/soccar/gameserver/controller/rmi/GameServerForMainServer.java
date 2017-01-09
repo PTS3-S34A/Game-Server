@@ -12,12 +12,21 @@ import java.rmi.server.UnicastRemoteObject;
 import nl.soccar.rmi.RmiConstants;
 
 /**
+ * A GameServerForMainServer is an RMI-stub object used by the Main Server that
+ * realizes the RMI-methods provided by the IGameServerForMainServer interface.
+ *
  * @author PTS34A
  */
 public final class GameServerForMainServer extends UnicastRemoteObject implements IGameServerForMainServer {
 
     private final GameServerRmiController controller;
 
+    /**
+     * Initializes the GameServerForMainServer class.
+     *
+     * @param controller RmiController that is given, not null
+     * @throws RemoteException
+     */
     public GameServerForMainServer(GameServerRmiController controller) throws RemoteException {
         this.controller = controller;
     }
@@ -37,6 +46,11 @@ public final class GameServerForMainServer extends UnicastRemoteObject implement
         return value * RmiConstants.PING_CALCULATION_FACTOR;
     }
 
+    /**
+     * Closes the RMI Stub.
+     *
+     * @throws IOException
+     */
     public final void close() throws IOException {
         UnicastRemoteObject.unexportObject(this, true);
     }

@@ -15,6 +15,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Controller class that is responsible for handling RMI network communication
+ * with the remote Main server.
+ * 
  * @author PTS34A
  */
 public final class GameServerRmiController {
@@ -26,6 +29,12 @@ public final class GameServerRmiController {
     private IMainServerForGameServer mainServerForGameServer;
     private GameServerForMainServer gameServerForMainServer;
 
+    /**
+     * Initializes the GameServerRmiController class.
+     * 
+     * @param host
+     * @param port 
+     */
     public GameServerRmiController(String host, int port) {
         this.host = host;
         this.port = port;
