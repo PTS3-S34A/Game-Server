@@ -32,27 +32,51 @@ public final class GameServerRmiController {
     /**
      * Initializes the GameServerRmiController class.
      * 
-     * @param host
-     * @param port 
+     * @param host The given host, not null.
+     * @param port The given port, not null.
      */
     public GameServerRmiController(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
+    /**
+     * Intializes the GameServerRmiController.
+     * 
+     * @throws IOException The IOException.
+     */
     public void initialize() throws IOException {
         registry = LocateRegistry.getRegistry(host, port);
     }
 
+    /**
+     * Binds the GameServer RMI Controller.
+     * 
+     * @throws NotBoundException
+     * @throws RemoteException 
+     */
     public void bind() throws NotBoundException, RemoteException {
         mainServerForGameServer = (IMainServerForGameServer) registry.lookup(RmiConstants.BINDING_NAME_MAIN_SERVER_FOR_GAME_SERVER);
     }
 
+    /**
+     * Registers the GameServer RMI Controller.
+     * 
+     * @throws IOException 
+     */
     public void register() throws IOException {
         gameServerForMainServer = new GameServerForMainServer(this);
         mainServerForGameServer.register(gameServerForMainServer);
     }
 
+    /**
+     * Creates a session.
+     * 
+     * @param roomName The given Room Name, not null.
+     * @param hostName The given Host Name, not null.
+     * @param hasPassword The given hassPassword boolean, not null.
+     * @param capacity The given capacity of the room, not null.
+     */
     public void sessionCreated(String roomName, String hostName, boolean hasPassword, int capacity) {
         try {
             String ipAddress = InetAddress.getLocalHost().getHostAddress();
@@ -66,6 +90,11 @@ public final class GameServerRmiController {
         }
     }
 
+    /**
+     * Destroys the Session.
+     * 
+     * @param roomName The given room name.
+     */
     public void sessionDestroyed(String roomName) {
         try {
             mainServerForGameServer.sessionDestroyed(gameServerForMainServer, roomName);
@@ -74,6 +103,11 @@ public final class GameServerRmiController {
         }
     }
 
+    /**
+     * Increases the Occupancy of the given room.
+     * 
+     * @param roomName The given room name, not null.
+     */
     public void increaseOccupancy(String roomName) {
         try {
             mainServerForGameServer.increaseSessionOccupancy(gameServerForMainServer, roomName);
@@ -82,6 +116,11 @@ public final class GameServerRmiController {
         }
     }
 
+    /**
+     * Decreases the Occupancy of the given room.
+     * 
+     * @param roomName The given room name, not null.
+     */
     public void decreaseOccupancy(String roomName) {
         try {
             mainServerForGameServer.decreaseSessionOccupancy(gameServerForMainServer, roomName);
@@ -90,6 +129,12 @@ public final class GameServerRmiController {
         }
     }
 
+    /**
+     * Changes the host of the given room.
+     * 
+     * @param roomName The given room, not null.
+     * @param host The given host, not null.
+     */
     public void changeHost(String roomName, String host) {
         try {
             mainServerForGameServer.hostChanged(gameServerForMainServer, roomName, host);
@@ -98,6 +143,9 @@ public final class GameServerRmiController {
         }
     }
 
+    /**
+     * Closes the RMI controller.
+     */
     public void close() {
         if (gameServerForMainServer != null) {
             try {
