@@ -4,10 +4,7 @@ import nl.soccar.gameserver.controller.socnet.message.*;
 import nl.soccar.gameserver.model.PlayerWrapper;
 import nl.soccar.gameserver.util.CarUtilities;
 import nl.soccar.gameserver.util.MapUtilities;
-import nl.soccar.library.Car;
-import nl.soccar.library.Game;
-import nl.soccar.library.GameSettings;
-import nl.soccar.library.Map;
+import nl.soccar.library.*;
 import nl.soccar.library.enumeration.GameStatus;
 import nl.soccar.library.enumeration.HandbrakeAction;
 import nl.soccar.library.enumeration.SteerAction;
@@ -91,6 +88,7 @@ public final class GameWrapper {
     public void sendWorldObjects(PlayerWrapper player) {
         sendCars(player);
         sendObstacles(player);
+        sendBall(player);
 
         player.getConnection().send(new ChangePlayerStatusMessage(ChangePlayerStatusMessage.Status.READY_TO_PLAY));
     }
@@ -219,7 +217,7 @@ public final class GameWrapper {
         MapUtilities.addWalls(engine, map);
         CarUtilities.addCars(this, room.getTeamBlue(), room.getTeamRed());
 
-        BallPhysics ball = new BallPhysics(session.getGame().getMap().getBall(), engine.getWorld());
+        BallPhysics ball = new BallPhysics(map.getBall(), engine.getWorld());
         engine.addWorldObject(ball);
     }
 
@@ -254,6 +252,12 @@ public final class GameWrapper {
                 .map(ObstaclePhysics::getObstacle)
                 .map(o -> new SpawnObstacleMessage(o.getX(), o.getY(), o.getDegree(), o.getWidth(), o.getHeight(), o.getObstacleType()))
                 .forEach(connection::send);
+    }
+
+    private void sendBall(PlayerWrapper player) {
+        Ball ball = game.getMap().getBall();
+
+        player.getConnection().send(new SpawnBallMessage(ball.getX(), ball.getY(), ball.getDegree(), ball.getBallType()));
     }
 
     private List<Message> getSynchronisationMessages() {
