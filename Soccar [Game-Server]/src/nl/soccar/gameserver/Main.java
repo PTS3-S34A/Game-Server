@@ -13,6 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Starting point of Soccar GameServer application.
+ *
  * @author PTS34A
  */
 public final class Main {
