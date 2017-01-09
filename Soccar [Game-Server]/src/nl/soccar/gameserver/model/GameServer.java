@@ -11,11 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Controller for the Gameserver.
+ * 
  * @author PTS34A
  */
 public final class GameServer {
 
-    private static final GameServer instance = new GameServer();
+    private static final GameServer INSTANCE = new GameServer();
 
     private final Map<Connection, PlayerWrapper> players = new HashMap<>();
     private final SessionController sessionController = new SessionController();
@@ -26,7 +28,7 @@ public final class GameServer {
     }
 
     public static GameServer getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     public void registerPlayer(PlayerWrapper player) {
