@@ -34,9 +34,11 @@ public final class GameWrapper {
     private final GameEngine engine;
     private Timer timer;
 
+    private long lastSecondsDecreasedMs = 0;
+    
     /**
      * Intializes the GameWrapper class.
-     * 
+     *
      * @param session The session, not null.
      * @param game The game, not null.
      */
@@ -67,8 +69,14 @@ public final class GameWrapper {
                     stop();
                     return;
                 }
-
                 List<Message> messages = getSynchronisationMessages();
+                
+                if (System.currentTimeMillis() - lastSecondsDecreasedMs >= 10000) {
+                    long currentTimeMilles = System.currentTimeMillis();
+                    lastSecondsDecreasedMs = currentTimeMilles;
+                    messages.add(new GameTimeSyncMessage(game.getSecondsLeft(), currentTimeMilles));
+                }
+                
                 session.getRoom().getPlayers().stream()
                         .map(PlayerWrapper::getConnection)
                         .forEach(c -> messages.forEach(c::send));
