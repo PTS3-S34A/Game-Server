@@ -69,7 +69,6 @@ public final class GameWrapper {
                     stop();
                     return;
                 }
-
                 List<Message> messages = getSynchronisationMessages();
                 
                 if (System.currentTimeMillis() - lastSecondsDecreasedMs >= 10000) {
