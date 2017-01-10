@@ -59,7 +59,7 @@ public final class SessionController {
 
     /**
      * Destroys the Session.
-     * 
+     *
      * @param roomName The given Room, not null.
      */
     public void destroySession(String roomName) {
@@ -68,8 +68,6 @@ public final class SessionController {
             if (session == null) {
                 return;
             }
-
-            session.destroy();
         }
 
         GameServer.getInstance().getRmiController().sessionDestroyed(roomName);
@@ -78,9 +76,9 @@ public final class SessionController {
 
     /**
      * Gets the Session.
-     * 
+     *
      * @param roomName The given Room, not null.
-     * 
+     *
      * @return SessionWrapper The session.
      */
     public SessionWrapper getSession(String roomName) {
