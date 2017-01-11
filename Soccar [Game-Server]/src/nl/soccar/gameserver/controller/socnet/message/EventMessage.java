@@ -17,15 +17,31 @@ public final class EventMessage extends Message {
     private final EventType type;
     private final int playerId;
 
+    /**
+     * Initializes the event message.
+     *
+     * @param type     The type of Event that should be sent, not null.
+     * @param playerId The id of the Player that initiated the Event.
+     */
     public EventMessage(EventType type, int playerId) {
         this.type = type;
         this.playerId = playerId;
     }
 
+    /**
+     * Gets the type of the Event that occurred.
+     *
+     * @return The type of the Event.
+     */
     public EventType getEventType() {
         return type;
     }
 
+    /**
+     * Gets the id of the player that initiated the Event.
+     *
+     * @return The id of the Player.
+     */
     public int getPlayerId() {
         return playerId;
     }
