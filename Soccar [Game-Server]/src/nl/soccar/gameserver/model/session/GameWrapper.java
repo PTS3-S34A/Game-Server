@@ -31,35 +31,37 @@ public final class GameWrapper {
     private final SessionWrapper session;
     private final Game game;
 
-    private final GameEngine engine;
+    private GameEngine engine;
     private Timer timer;
-
-    private long lastSecondsDecreasedMs = 0;
 
     /**
      * Intializes the GameWrapper class.
      *
      * @param session The session, not null.
-     * @param game The game, not null.
+     * @param game    The game, not null.
      */
     public GameWrapper(SessionWrapper session, Game game) {
         this.session = session;
         this.game = game;
-
-        engine = new GameEngine(session.unwrap());
-        engine.addListener(new ServerGameEventListener());
     }
 
     /**
      * Starts the game.
      */
     public void requestStart() {
+        initializeEngine();
         initializeWorldObjects();
         sendGameInformation();
     }
 
+    private void initializeEngine() {
+        engine = new GameEngine(session.unwrap());
+        engine.addListener(new ServerGameEventListener());
+    }
+
     private void start() {
         engine.start();
+
         game.setPaused(false);
 
         timer = new Timer();
@@ -77,12 +79,6 @@ public final class GameWrapper {
 
                 List<Message> messages = getSynchronisationMessages();
 
-                if (System.currentTimeMillis() - lastSecondsDecreasedMs >= 10000) {
-                    long currentTimeMilles = System.currentTimeMillis();
-                    lastSecondsDecreasedMs = currentTimeMilles;
-                    messages.add(new GameTimeSyncMessage(game.getSecondsLeft(), currentTimeMilles));
-                }
-
                 session.getRoom().getPlayers().stream()
                         .map(PlayerWrapper::getConnection)
                         .forEach(c -> messages.forEach(c::send));
@@ -96,12 +92,17 @@ public final class GameWrapper {
     public void stop() {
         if (timer != null) {
             timer.cancel();
+            timer.purge();
+            timer = null;
 
             engine.stop();
+            engine = null;
 
+            sendStopGameMessage();
             saveStatistics();
         }
 
+        game.getMap().removeCars();
         playersReady.clear();
     }
 
@@ -122,10 +123,10 @@ public final class GameWrapper {
      * Moves the position of the given player and sends this to all the other
      * players.
      *
-     * @param player The given player, not null.
-     * @param steerAction The steer action of the player, not null.
+     * @param player          The given player, not null.
+     * @param steerAction     The steer action of the player, not null.
      * @param handbrakeAction The handbrake action of the player, not null.
-     * @param throttleAction The throttole action of the player, not null.
+     * @param throttleAction  The throttole action of the player, not null.
      */
     public void movePlayer(PlayerWrapper player, SteerAction steerAction, HandbrakeAction handbrakeAction, ThrottleAction throttleAction) {
         Map map = game.getMap();
@@ -248,6 +249,13 @@ public final class GameWrapper {
                     .map(Player::getUsername)
                     .forEach(controller::incrementGamesPlayed);
         }
+    }
+
+    private void sendStopGameMessage() {
+        StopGameMessage message = new StopGameMessage();
+        session.getRoom().getPlayers().stream()
+                .map(PlayerWrapper::getConnection)
+                .forEach(c -> c.send(message));
     }
 
     private void initializeWorldObjects() {
