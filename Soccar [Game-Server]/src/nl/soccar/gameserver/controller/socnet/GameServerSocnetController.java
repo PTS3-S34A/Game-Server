@@ -58,6 +58,7 @@ public final class GameServerSocnetController {
         registry.register(ChangePlayerStatusMessage.class);
         registry.register(PlayerSyncMessage.class);
         registry.register(BallSyncMessage.class);
+        registry.register(GameTimeSyncMessage.class);
         registry.register(EventMessage.class);
     }
 
