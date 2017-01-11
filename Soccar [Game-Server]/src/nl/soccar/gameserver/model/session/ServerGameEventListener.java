@@ -11,6 +11,8 @@ import nl.soccar.physics.listener.GameEventListener;
 import java.time.LocalTime;
 
 /**
+ * Listens for Events, namely when the ball enters the goal, and acts upon them.
+ *
  * @author PTS34A
  */
 public final class ServerGameEventListener implements GameEventListener {
