@@ -35,7 +35,7 @@ public final class GameWrapper {
     private Timer timer;
 
     private long lastSecondsDecreasedMs = 0;
-    
+
     /**
      * Intializes the GameWrapper class.
      *
@@ -46,7 +46,8 @@ public final class GameWrapper {
         this.session = session;
         this.game = game;
 
-        engine = new GameEngine(game);
+        engine = new GameEngine(session.unwrap());
+        engine.addListener(new ServerGameEventListener());
     }
 
     /**
@@ -69,14 +70,18 @@ public final class GameWrapper {
                     stop();
                     return;
                 }
+
+                if (game.getStatus() != GameStatus.RUNNING) {
+                    return;
+                }
+
                 List<Message> messages = getSynchronisationMessages();
-                
                 if (System.currentTimeMillis() - lastSecondsDecreasedMs >= 10000) {
                     long currentTimeMilles = System.currentTimeMillis();
                     lastSecondsDecreasedMs = currentTimeMilles;
                     messages.add(new GameTimeSyncMessage(game.getSecondsLeft(), currentTimeMilles));
                 }
-                
+
                 session.getRoom().getPlayers().stream()
                         .map(PlayerWrapper::getConnection)
                         .forEach(c -> messages.forEach(c::send));
@@ -300,12 +305,17 @@ public final class GameWrapper {
 
         for (PlayerWrapper p : players) {
             CarPhysics car = engine.getCarFromPlayer(p.unwrap());
+            if (car.isResetting()) {
+                continue;
+            }
 
             messages.add(new PlayerSyncMessage(p.getPlayerId(), car.getX(), car.getY(), car.getDegree(), car.getLinearVelocityX(), car.getLinearVelocityY(), car.getAngularVelocity()));
         }
 
         BallPhysics ball = engine.getBall();
-        messages.add(new BallSyncMessage(ball.getX(), ball.getY(), ball.getLinearVelocityX(), ball.getLinearVelocityY(), ball.getAngularVelocity()));
+        if (!ball.isResetting()) {
+            messages.add(new BallSyncMessage(ball.getX(), ball.getY(), ball.getLinearVelocityX(), ball.getLinearVelocityY(), ball.getAngularVelocity()));
+        }
 
         return messages;
     }
