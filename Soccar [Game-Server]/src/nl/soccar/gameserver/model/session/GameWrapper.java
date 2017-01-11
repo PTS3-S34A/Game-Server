@@ -76,6 +76,7 @@ public final class GameWrapper {
                 }
 
                 List<Message> messages = getSynchronisationMessages();
+
                 if (System.currentTimeMillis() - lastSecondsDecreasedMs >= 10000) {
                     long currentTimeMilles = System.currentTimeMillis();
                     lastSecondsDecreasedMs = currentTimeMilles;
@@ -93,11 +94,13 @@ public final class GameWrapper {
      * Stops the game.
      */
     public void stop() {
-        timer.cancel();
+        if (timer != null) {
+            timer.cancel();
 
-        engine.stop();
+            engine.stop();
 
-        saveStatistics();
+            saveStatistics();
+        }
 
         playersReady.clear();
     }
