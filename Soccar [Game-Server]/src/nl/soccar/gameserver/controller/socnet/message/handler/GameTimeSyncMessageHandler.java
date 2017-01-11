@@ -7,7 +7,7 @@ import nl.soccar.socnet.message.MessageHandler;
 
 /**
  * Handler for the GameTimeSyncMessage.
- * 
+ *
  * @author PTS34A
  */
 public class GameTimeSyncMessageHandler extends MessageHandler<GameTimeSyncMessage> {
@@ -25,7 +25,7 @@ public class GameTimeSyncMessageHandler extends MessageHandler<GameTimeSyncMessa
 
     @Override
     protected GameTimeSyncMessage decode(Connection connection, ByteBuf buf) throws Exception {
-        throw new UnsupportedOperationException("Decoding is not supported for Server."); 
+        throw new UnsupportedOperationException("Decoding is not supported for Server.");
     }
-    
+
 }
