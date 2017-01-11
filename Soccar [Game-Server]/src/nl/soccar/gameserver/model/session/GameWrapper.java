@@ -44,7 +44,8 @@ public final class GameWrapper {
         this.session = session;
         this.game = game;
 
-        engine = new GameEngine(game);
+        engine = new GameEngine(session.unwrap());
+        engine.addListener(new ServerGameEventListener());
     }
 
     /**
@@ -65,6 +66,10 @@ public final class GameWrapper {
             public void run() {
                 if (game.getStatus() == GameStatus.STOPPED) {
                     stop();
+                    return;
+                }
+
+                if (game.getStatus() != GameStatus.RUNNING) {
                     return;
                 }
 
@@ -292,12 +297,17 @@ public final class GameWrapper {
 
         for (PlayerWrapper p : players) {
             CarPhysics car = engine.getCarFromPlayer(p.unwrap());
+            if (car.isResetting()) {
+                continue;
+            }
 
             messages.add(new PlayerSyncMessage(p.getPlayerId(), car.getX(), car.getY(), car.getDegree(), car.getLinearVelocityX(), car.getLinearVelocityY(), car.getAngularVelocity()));
         }
 
         BallPhysics ball = engine.getBall();
-        messages.add(new BallSyncMessage(ball.getX(), ball.getY(), ball.getLinearVelocityX(), ball.getLinearVelocityY(), ball.getAngularVelocity()));
+        if (!ball.isResetting()) {
+            messages.add(new BallSyncMessage(ball.getX(), ball.getY(), ball.getLinearVelocityX(), ball.getLinearVelocityY(), ball.getAngularVelocity()));
+        }
 
         return messages;
     }
