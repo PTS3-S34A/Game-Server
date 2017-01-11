@@ -68,6 +68,8 @@ public final class SessionController {
             if (session == null) {
                 return;
             }
+
+            session.destroy();
         }
 
         GameServer.getInstance().getRmiController().sessionDestroyed(roomName);

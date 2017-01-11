@@ -26,6 +26,13 @@ public final class SessionWrapper {
     }
 
     /**
+     * Destroys the Session.
+     */
+    public void destroy() {
+        game.stop();
+    }
+
+    /**
      * Gets the Room.
      *
      * @return RoomWrapper The Room of this Session.
