@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public final class GameWrapper {
 
     private final List<PlayerWrapper> playersReady = new ArrayList<>();
+    private final List<PlayerWrapper> playersIngame = new ArrayList<>();
 
     private final SessionWrapper session;
     private final Game game;
@@ -60,8 +61,10 @@ public final class GameWrapper {
     }
 
     private void start() {
-        engine.start();
+        playersReady.forEach(playersIngame::add);
+        playersReady.clear();
 
+        engine.start();
         game.setPaused(false);
 
         timer = new Timer();
@@ -78,8 +81,7 @@ public final class GameWrapper {
                 }
 
                 List<Message> messages = getSynchronisationMessages();
-
-                session.getRoom().getPlayers().stream()
+                playersIngame.stream()
                         .map(PlayerWrapper::getConnection)
                         .forEach(c -> messages.forEach(c::send));
             }
@@ -103,7 +105,9 @@ public final class GameWrapper {
         }
 
         game.getMap().removeCars();
+
         playersReady.clear();
+        playersIngame.clear();
     }
 
     /**
@@ -140,7 +144,7 @@ public final class GameWrapper {
         }
 
         MovePlayerMessage message = new MovePlayerMessage(player.getPlayerId(), steerAction, handbrakeAction, throttleAction);
-        session.getRoom().getPlayers().stream()
+        playersIngame.stream()
                 .filter(p -> !p.equals(player))
                 .map(PlayerWrapper::getConnection)
                 .forEach(c -> c.send(message));
@@ -159,7 +163,7 @@ public final class GameWrapper {
             start();
 
             PlayerChangedGameStatusMessage message = new PlayerChangedGameStatusMessage(PlayerChangedGameStatusMessage.Status.GAME_RUNNING);
-            playersReady.stream()
+            playersIngame.stream()
                     .map(PlayerWrapper::getConnection)
                     .forEach(c -> c.send(message));
         }
@@ -187,7 +191,7 @@ public final class GameWrapper {
         });
 
         GameServerRmiController controller = GameServer.getInstance().getRmiController();
-        for (PlayerWrapper p : session.getRoom().getPlayers()) {
+        for (PlayerWrapper p : playersIngame) {
             String username = p.getUsername();
 
             Integer goals = allGoals.get(username);
@@ -253,7 +257,7 @@ public final class GameWrapper {
 
     private void sendStopGameMessage() {
         StopGameMessage message = new StopGameMessage();
-        session.getRoom().getPlayers().stream()
+        playersIngame.stream()
                 .map(PlayerWrapper::getConnection)
                 .forEach(c -> c.send(message));
     }
@@ -311,10 +315,7 @@ public final class GameWrapper {
     private List<Message> getSynchronisationMessages() {
         List<Message> messages = new ArrayList<>();
 
-        RoomWrapper room = session.getRoom();
-        List<PlayerWrapper> players = room.getPlayers();
-
-        for (PlayerWrapper p : players) {
+        for (PlayerWrapper p : playersIngame) {
             CarPhysics car = engine.getCarFromPlayer(p.unwrap());
             if (car.isResetting()) {
                 continue;
