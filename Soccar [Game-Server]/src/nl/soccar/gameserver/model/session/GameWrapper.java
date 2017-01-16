@@ -16,6 +16,7 @@ import nl.soccar.physics.models.ObstaclePhysics;
 import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.Message;
 
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -108,6 +109,15 @@ public final class GameWrapper {
 
         playersReady.clear();
         playersIngame.clear();
+    }
+
+    public void addGameEvent(EventType type, Player player) {
+        EventMessage message = new EventMessage(type, player.getPlayerId());
+        playersIngame.stream()
+                .map(PlayerWrapper::getConnection)
+                .forEach(c -> c.send(message));
+
+        game.addEvent(new Event(type, LocalTime.now(), player));
     }
 
     /**
