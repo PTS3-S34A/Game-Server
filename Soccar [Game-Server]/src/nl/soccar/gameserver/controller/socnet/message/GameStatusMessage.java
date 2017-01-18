@@ -36,7 +36,7 @@ public final class GameStatusMessage extends Message {
 
     @Override
     public int getId() {
-        return MessageConstants.EVENT_MESSAGE_ID;
+        return MessageConstants.GAME_STATUS_MESSAGE_ID;
     }
 
 }
