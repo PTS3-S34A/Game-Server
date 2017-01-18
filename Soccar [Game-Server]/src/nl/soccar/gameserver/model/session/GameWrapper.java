@@ -111,6 +111,12 @@ public final class GameWrapper {
         playersIngame.clear();
     }
 
+    /**
+     * Adds an event to the Game-object. Also notifies all connected players that an Event has actually occurred.
+     *
+     * @param type   The type of Event that should be added.
+     * @param player The player that triggered the Event.
+     */
     public void addGameEvent(EventType type, Player player) {
         EventMessage message = new EventMessage(type, player.getPlayerId());
         playersIngame.stream()
