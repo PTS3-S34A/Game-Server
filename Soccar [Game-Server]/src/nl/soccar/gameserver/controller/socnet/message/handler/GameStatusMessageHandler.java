@@ -2,6 +2,10 @@ package nl.soccar.gameserver.controller.socnet.message.handler;
 
 import io.netty.buffer.ByteBuf;
 import nl.soccar.gameserver.controller.socnet.message.GameStatusMessage;
+import nl.soccar.gameserver.model.GameServer;
+import nl.soccar.gameserver.model.PlayerWrapper;
+import nl.soccar.gameserver.model.session.GameWrapper;
+import nl.soccar.gameserver.model.session.SessionWrapper;
 import nl.soccar.socnet.connection.Connection;
 import nl.soccar.socnet.message.MessageHandler;
 
@@ -14,7 +18,19 @@ public final class GameStatusMessageHandler extends MessageHandler<GameStatusMes
 
     @Override
     protected void handle(Connection connection, GameStatusMessage message) throws Exception {
-        throw new UnsupportedOperationException("Handling not supported for Server.");
+        GameServer server = GameServer.getInstance();
+        PlayerWrapper player = server.getPlayer(connection);
+        if (player == null) {
+            return;
+        }
+
+        SessionWrapper session = player.getCurrentSession();
+        if (session == null) {
+            return;
+        }
+
+        GameWrapper game = session.getGame();
+        connection.send(new GameStatusMessage(game.getGameStatus()));
     }
 
     @Override
@@ -24,7 +40,7 @@ public final class GameStatusMessageHandler extends MessageHandler<GameStatusMes
 
     @Override
     protected GameStatusMessage decode(Connection connection, ByteBuf buf) throws Exception {
-        throw new UnsupportedOperationException("Decoding not supported for Server.");
+        return new GameStatusMessage();
     }
 
 }
