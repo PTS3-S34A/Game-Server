@@ -87,6 +87,8 @@ public final class GameWrapper {
                         .forEach(c -> messages.forEach(c::send));
             }
         }, 0, 75);
+
+        notifyGameStatus();
     }
 
     /**
@@ -109,6 +111,8 @@ public final class GameWrapper {
 
         playersReady.clear();
         playersIngame.clear();
+
+        notifyGameStatus();
     }
 
     /**
@@ -183,6 +187,13 @@ public final class GameWrapper {
                     .map(PlayerWrapper::getConnection)
                     .forEach(c -> c.send(message));
         }
+    }
+
+    private void notifyGameStatus() {
+        GameStatusMessage message = new GameStatusMessage(game.getStatus());
+        session.getRoom().getPlayers().stream()
+                .map(PlayerWrapper::getConnection)
+                .forEach(c -> c.send(message));
     }
 
     private void saveStatistics() {
@@ -346,6 +357,15 @@ public final class GameWrapper {
         }
 
         return messages;
+    }
+
+    /**
+     * Gets the GameStatus of the Game.
+     *
+     * @return The GameStatus of the Game.
+     */
+    public GameStatus getGameStatus() {
+        return game.getStatus();
     }
 
     /**
