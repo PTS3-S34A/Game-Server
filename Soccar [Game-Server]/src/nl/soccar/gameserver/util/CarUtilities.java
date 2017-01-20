@@ -65,7 +65,7 @@ public final class CarUtilities {
         Car car = new Car(x, y, degree, player.getCarType(), player);
         map.addCar(car);
 
-        CarPhysics physics = new CarPhysics(car, engine.getWorld());
+        CarPhysics physics = new CarPhysics(engine, car);
         engine.addCar(player, physics);
     }
 

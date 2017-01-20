@@ -296,7 +296,7 @@ public final class GameWrapper {
         MapUtilities.addWalls(engine, map);
         CarUtilities.addCars(this, room.getTeamBlue(), room.getTeamRed());
 
-        BallPhysics ball = new BallPhysics(map.getBall(), engine.getWorld());
+        BallPhysics ball = new BallPhysics(engine, map.getBall());
         engine.addWorldObject(ball);
     }
 
