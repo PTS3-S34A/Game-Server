@@ -6,7 +6,6 @@ import nl.soccar.library.Obstacle;
 import nl.soccar.library.enumeration.ObstacleType;
 import nl.soccar.physics.GameEngine;
 import nl.soccar.physics.models.ObstaclePhysics;
-import org.jbox2d.dynamics.World;
 
 /**
  * Utilites for the Map.
@@ -43,22 +42,20 @@ public final class MapUtilities {
      * @param mapHeight The height of the map.
      */
     private static void addWestWalls(GameEngine engine, Map map, float mapHeight) {
-        World world = engine.getWorld();
-
         Rectangle leftGoal = map.getGoalBlue();
         float leftGoalY = (float) leftGoal.getY();
 
-        ObstaclePhysics westWallUpper = new ObstacleBuilder(world)
+        ObstaclePhysics westWallUpper = new ObstacleBuilder(engine)
                 .x(WALL_WIDTH / 2).y((mapHeight + leftGoalY) / 2).degree(0)
                 .width(WALL_WIDTH).height(mapHeight - leftGoalY)
                 .type(ObstacleType.WALL).build();
 
-        ObstaclePhysics westWallLower = new ObstacleBuilder(world)
+        ObstaclePhysics westWallLower = new ObstacleBuilder(engine)
                 .x(WALL_WIDTH / 2).y((mapHeight - leftGoalY) / 2).degree(0)
                 .width(WALL_WIDTH).height(mapHeight - leftGoalY)
                 .type(ObstacleType.WALL).build();
 
-        ObstaclePhysics westWallMiddle = new ObstacleBuilder(world)
+        ObstaclePhysics westWallMiddle = new ObstacleBuilder(engine)
                 .x(-WALL_WIDTH).y(mapHeight / 2).degree(0)
                 .width(WALL_WIDTH).height(mapHeight)
                 .type(ObstacleType.WALL).build();
@@ -76,22 +73,20 @@ public final class MapUtilities {
      * @param mapHeight The height of the map.
      */
     private static void addEastWalls(GameEngine engine, Map map, float mapWidth, float mapHeight) {
-        World world = engine.getWorld();
-
         Rectangle rightGoal = map.getGoalRed();
         float rightGoalY = (float) rightGoal.getY();
 
-        ObstaclePhysics eastWallUpper = new ObstacleBuilder(world)
+        ObstaclePhysics eastWallUpper = new ObstacleBuilder(engine)
                 .x(mapWidth - (WALL_WIDTH / 2)).y((mapHeight + rightGoalY) / 2).degree(0)
                 .width(WALL_WIDTH).height(mapHeight - rightGoalY)
                 .type(ObstacleType.WALL).build();
 
-        ObstaclePhysics eastWallLower = new ObstacleBuilder(world)
+        ObstaclePhysics eastWallLower = new ObstacleBuilder(engine)
                 .x(mapWidth - (WALL_WIDTH / 2)).y((mapHeight - rightGoalY) / 2).degree(0)
                 .width(WALL_WIDTH).height(mapHeight - rightGoalY)
                 .type(ObstacleType.WALL).build();
 
-        ObstaclePhysics eastWallMiddle = new ObstacleBuilder(world)
+        ObstaclePhysics eastWallMiddle = new ObstacleBuilder(engine)
                 .x(mapWidth + WALL_WIDTH).y(mapHeight / 2).degree(0)
                 .width(WALL_WIDTH).height(mapHeight)
                 .type(ObstacleType.WALL).build();
@@ -109,14 +104,12 @@ public final class MapUtilities {
      * @param mapHeight The height of the map.
      */
     private static void addNorthAndSouthWalls(GameEngine engine, float mapWidth, float mapHeight) {
-        World world = engine.getWorld();
-
-        ObstaclePhysics northWall = new ObstacleBuilder(world)
+        ObstaclePhysics northWall = new ObstacleBuilder(engine)
                 .x(mapWidth / 2).y(mapHeight - (WALL_WIDTH / 2)).degree(0)
                 .width(mapWidth).height(WALL_WIDTH)
                 .type(ObstacleType.WALL).build();
 
-        ObstaclePhysics southWall = new ObstacleBuilder(world)
+        ObstaclePhysics southWall = new ObstacleBuilder(engine)
                 .x(mapWidth / 2).y(WALL_WIDTH / 2).degree(0)
                 .width(mapWidth).height(WALL_WIDTH)
                 .type(ObstacleType.WALL).build();
@@ -131,7 +124,7 @@ public final class MapUtilities {
      */
     public static class ObstacleBuilder {
 
-        private final World world;
+        private final GameEngine engine;
 
         private float x;
         private float y;
@@ -143,10 +136,10 @@ public final class MapUtilities {
         /**
          * Initiates a new ObstacleBuilder with the given parameters.
          *
-         * @param world The world that will be used to create the physics-model.
+         * @param engine The engine that will be used to create the physics-model.
          */
-        public ObstacleBuilder(World world) {
-            this.world = world;
+        public ObstacleBuilder(GameEngine engine) {
+            this.engine = engine;
         }
 
         /**
@@ -229,7 +222,7 @@ public final class MapUtilities {
          */
         public ObstaclePhysics build() {
             Obstacle obstacle = new Obstacle(x, y, degree, width, height, type);
-            return new ObstaclePhysics(obstacle, world);
+            return new ObstaclePhysics(engine, obstacle);
         }
 
     }
